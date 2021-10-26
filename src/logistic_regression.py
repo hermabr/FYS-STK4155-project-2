@@ -6,6 +6,15 @@ class CommonClassifier():
     """Common methods for classifiers"""
     
     def accuracy(self, X_test, y_test):
+        """Gets the accuracy based on X_test and y_test
+
+        Parameters
+        ----------
+            X_test : np.array
+                test set for data X
+            y_test : np.array
+                test set for data y
+        """
         pred = self.predict(X_test)
         
         if len(pred.shape) > 1:
