@@ -1,8 +1,10 @@
 import numpy as np
+from tqdm import tqdm
+from autograd import grad
 
 
 class LinearRegression(object):
-    def __init__(self, degree):
+    def __init__(self, degree, t0=5, t1=50):
         """A general constructor for the linear regression models
 
         Parameters
@@ -11,8 +13,44 @@ class LinearRegression(object):
                 The degree of the linear regression model
         """
         self.degree = degree
+        self.t0 = t0
+        self.t1 = t1
 
-    def predict(self, x, y):
+    def sgd(
+        self, X, z, n_epochs, n_mini_batches, tol=10e-7
+    ):  # TODO: Include a eta function, maybe just change t0, t1
+        get_grad = grad(self.loss_function, argnum=2)
+        beta = np.random.randn(X.shape[1], 1)
+        n_inputs = len(z)
+        data_indices = np.arange(n_mini_batches)
+        number_of_data_points_in_batch = n_inputs // n_mini_batches
+
+        for _ in tqdm(range(n_epochs)):
+            for k in range(number_of_data_points_in_batch):
+
+                chosen_datapoints_indexes = np.random.choice(
+                    data_indices, size=n_mini_batches, replace=False
+                )
+                X_batch = X[chosen_datapoints_indexes]
+                z_batch = z[chosen_datapoints_indexes]
+
+                if hasattr(self, "lambda_"):
+                    grad_beta = get_grad(X_batch, z_batch, beta, self.lambda_)
+                else:
+                    grad_beta = get_grad(X_batch, z_batch, beta)
+
+                eta = self.learning_schedule(k)
+                beta_new = beta - eta * grad_beta
+
+                if np.max(np.abs(beta_new - beta)) <= tol:
+                    print("Converged")  # TODO: Nicer output
+                    self.beta = beta_new.flatten()
+                    return
+
+                beta = beta_new
+        self.beta = beta.flatten()
+
+    def predict(self, X):
         """A method for predicting for some input data, using the fitted betas
 
         Parameters
@@ -34,11 +72,11 @@ class LinearRegression(object):
         """
         if not hasattr(self, "beta"):
             raise AttributeError("The model has not yet been fitted")
-        X = self.generate_design_matrix(x, y)
+        #  X = self.generate_design_matrix(x, y)
         z_tilde = self.beta @ X.T
         return z_tilde
 
-    def fit(self, x, y, z):
+    def fit(self, X, z):
         """Abstract method for fitting the linear model
 
         Parameters
@@ -59,6 +97,9 @@ class LinearRegression(object):
             "The fit method is not implemented for the generic linear regression model"
         )
 
+    def loss_function(self, X, z, beta):
+        return NotImplementedError("TODO: Not implemented message")
+
     def confidence_intervals(self, *_):
         """Abstract method for getting the confidence interval for a model
 
@@ -70,32 +111,6 @@ class LinearRegression(object):
         raise NotImplementedError(
             "The confidence intervals method is not implemented for the generic linear regression model"
         )
-
-    def generate_design_matrix(self, x, y):
-        """Generated a design matrix given x and y values
-
-        Parameters
-        ----------
-            x : np.array
-                The x values for which to generate the design matrix
-            y : np.array
-                The y values for which to generate the design matrix
-
-        Returns
-        -------
-            X : np.array
-                The design matrix for the given x and y values
-        """
-        N = len(x)
-        p = int((self.degree + 1) * (self.degree + 2) / 2)
-        X = np.ones((N, p))
-
-        for i in range(self.degree):
-            q = int((i + 1) * (i + 2) / 2)
-            for j in range(i + 2):
-                X[:, q + j] = x ** (i - j + 1) * y ** j
-
-        return X
 
     def bootstrap(self, data, bootstrap_N):
         """Bootstrap method for the linear regression model
@@ -171,6 +186,9 @@ class LinearRegression(object):
             mse += self.MSE(z_test, z_test_tilde)
 
         return mse / k_folds
+
+    def learning_schedule(self, t):
+        return self.t0 / (t + self.t1)
 
     @staticmethod
     def MSE(z, z_tilde):

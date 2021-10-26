@@ -1,4 +1,4 @@
-import numpy as np
+import autograd.numpy as np
 from scipy import stats
 from linear_regression_models import LinearRegression
 
@@ -37,6 +37,14 @@ class Ridge(LinearRegression):
         hessian_and_regularized_inv = np.linalg.pinv(hessian_and_regularized)
 
         self.beta = hessian_and_regularized_inv @ X.T @ z
+
+    #  def loss_function(self, X, z, beta):
+    #      loss = np.mean((z.reshape(-1, 1) - X @ beta) ** 2)
+    #      return loss
+
+    def loss_function(self, X, z, beta, lambda_):
+        loss = np.mean((z.reshape(-1, 1) - X @ beta) ** 2) + lambda_ * sum(beta ** 2)
+        return loss
 
     def confidence_intervals(self, x, y, z, z_tilde, alpha=0.05):
         """Calculates the confidence interval for each beta value

@@ -4,9 +4,9 @@ from config import DEFAULT_NOISE_LEVEL
 
 
 class Data:
-    def __init__(self):
+    def __init__(self, degree):
         """Empty initialized for the abstract data class"""
-        pass
+        self.degree = degree
 
     def scale_data(self, data):
         """Scales the data by scaling to values from 0 to 1, then subtracting the mean
@@ -41,19 +41,17 @@ class Data:
         """
         x, y, z = np.ravel(x), np.ravel(y), np.ravel(z)
 
+        X = self.generate_design_matrix(x, y)
         if not test_size:
-            self._x = x
-            self._y = y
+            self._X = X
             self._z = z
         else:
             (
-                self._x_train,
-                self._x_test,
-                self._y_train,
-                self._y_test,
+                self._X_train,
+                self._X_test,
                 self._z_train,
                 self._z_test,
-            ) = train_test_split(x, y, z, test_size=test_size)
+            ) = train_test_split(X, z, test_size=test_size)
 
     def train_test_split(self, test_size):
         """Splits the data into a train and test data by using sklearn train_test_split
@@ -100,27 +98,45 @@ class Data:
                 f"The franke data does not have the attribute '{name[1:]}'. You can only access 'x', 'y', 'z' if there is no test split, and 'x_train', 'y_train', 'z_train', 'x_test', 'y_test' and 'z_test' if there is a test split"
             )
 
+    def get_number_of_parameters(self):
+        return int((self.degree + 1) * (self.degree + 2) / 2)
+
+    def generate_design_matrix(self, x, y):
+        """Generated a design matrix given x and y values
+
+        Parameters
+        ----------
+            x : np.array
+                The x values for which to generate the design matrix
+            y : np.array
+                The y values for which to generate the design matrix
+
+        Returns
+        -------
+            X : np.array
+                The design matrix for the given x and y values
+        """
+        N = len(x)
+        p = self.get_number_of_parameters()
+        X = np.ones((N, p))
+
+        for i in range(self.degree):
+            q = int((i + 1) * (i + 2) / 2)
+            for j in range(i + 2):
+                X[:, q + j] = x ** (i - j + 1) * y ** j
+
+        return X
+
     @property
-    def x(self):
+    def X(self):
         """Get the x-value if it exists
 
         Returns
         -------
-            x : np.array
-                Returns the attribute x if it exists
+            X : np.array
+                Returns the attribute X if it exists
         """
-        return self.check_property("_x")
-
-    @property
-    def y(self):
-        """Get the y-value if it exists
-
-        Returns
-        -------
-            y : np.array
-                Returns the attribute y if it exists
-        """
-        return self.check_property("_y")
+        return self.check_property("_X")
 
     @property
     def z(self):
@@ -134,7 +150,7 @@ class Data:
         return self.check_property("_z")
 
     @property
-    def x_train(self):
+    def X_train(self):
         """Get the x_train-value if it exists
 
         Returns
@@ -142,18 +158,7 @@ class Data:
             x_train : np.array
                 Returns the attribute x_train if it exists
         """
-        return self.check_property("_x_train")
-
-    @property
-    def y_train(self):
-        """Get the y_train-value if it exists
-
-        Returns
-        -------
-            y_train : np.array
-                Returns the attribute y_train if it exists
-        """
-        return self.check_property("_y_train")
+        return self.check_property("_X_train")
 
     @property
     def z_train(self):
@@ -167,7 +172,7 @@ class Data:
         return self.check_property("_z_train")
 
     @property
-    def x_test(self):
+    def X_test(self):
         """Get the x_test-value if it exists
 
         Returns
@@ -175,18 +180,7 @@ class Data:
             x_test : np.array
                 Returns the attribute x_test if it exists
         """
-        return self.check_property("_x_test")
-
-    @property
-    def y_test(self):
-        """Get the y_test-value if it exists
-
-        Returns
-        -------
-            y_test : np.array
-                Returns the attribute y_test if it exists
-        """
-        return self.check_property("_y_test")
+        return self.check_property("_X_test")
 
     @property
     def z_test(self):
@@ -204,6 +198,7 @@ class FrankeData(Data):
     def __init__(
         self,
         N,
+        degree,
         random_noise=True,
         random_positions=True,
         scale_data=True,
@@ -215,7 +210,7 @@ class FrankeData(Data):
         Parameters
         ----------
             N : int
-                The number of elements in the x and y directions
+                The number of elements in the x and y directions (NOTE: total number of points is N squared)
             random_noise : bool
                 Adds random noise if true
             random_positions : bool
@@ -227,7 +222,7 @@ class FrankeData(Data):
             noise_level : float
                 The sigma value for the noise level
         """
-        super().__init__()
+        super().__init__(degree=degree)
 
         self.dimensions = (N, N)
 
