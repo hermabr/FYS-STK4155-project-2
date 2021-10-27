@@ -17,7 +17,7 @@ class Ridge(LinearRegression):
         super().__init__(degree)
         self.lambda_ = lambda_
 
-    def fit(self, x, y, z):
+    def fit(self, X, z):
         """Fits data using ridge regression saving the betas for the fit
 
         Parameters
@@ -29,7 +29,6 @@ class Ridge(LinearRegression):
             z : np.array
                 The z values for which to fit the model
         """
-        X = self.generate_design_matrix(x, y)
 
         hessian = X.T @ X
         lambda_I = self.lambda_ * np.identity(len(hessian))
