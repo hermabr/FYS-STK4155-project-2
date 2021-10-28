@@ -35,6 +35,19 @@ class NeuralNetwork(linear_regression_models): #<---- this may need to change fo
         self.lmbd = lmbd
 
         self.create_biases_and_weights()
+    
+    # activation functions https://ml-cheatsheet.readthedocs.io/en/latest/activation_functions.html#leakyrelu
+    def sigmoid(self, x):
+        return 1 / (1 + np.exp(-x))
+        
+    def softmax(self, x):
+        return np.exp(x) / sum(np.exp(x), axis=0)
+    
+    def ReLu(self, x):
+        return max(0, x)
+        
+    def LeakyRelu(self, x, alpha=0.01):
+        return max(alpha * x, x)
 
     def create_biases_and_weights(self):
         self.hidden_weights = np.random.randn(self.n_features, self.n_hidden_neurons)
@@ -48,13 +61,13 @@ class NeuralNetwork(linear_regression_models): #<---- this may need to change fo
         self.z_h = self.X_data @ self.hidden_weights + self.hidden_bias
         
         if self.activation == 'sigmoid':
-            self.a_h = sigmoid(self.z_h)
+            self.a_h = self.sigmoid(self.z_h)
         elif self.activation == 'softmax':
-            pass #TODO add softmax(?)
+            self.a_h = self.softmax(self.z_h)
         elif self.activation == 'relu':
-            pass #TODO add relu
+            self.a_h = self.ReLu(self.z_h)
         elif self.activation == 'leakyrelu':
-            pass #TODO add leaky relu
+            self.a_h = self.LeakyRelu(self.z_h) #TODO add alpha params to init
         else: # == 'none'
             self.a_h = self.z_h
 
@@ -68,13 +81,13 @@ class NeuralNetwork(linear_regression_models): #<---- this may need to change fo
         z_h = X @ self.hidden_weights + self.hidden_bias
         
         if self.activation == 'sigmoid':
-            a_h = sigmoid(z_h)
+            a_h = self.sigmoid(z_h)
         elif self.activation == 'softmax':
-            pass #TODO add softmax(?)
+            a_h = self.softmax(z_h)
         elif self.activation == 'relu':
-            pass #TODO add relu
+            a_h = self.ReLu(z_h)
         elif self.activation == 'leakyrelu':
-            pass #TODO add leaky relu
+            a_h = self.sigmoid(z_h)
         else: # == 'none'
             a_h = z_h
 
