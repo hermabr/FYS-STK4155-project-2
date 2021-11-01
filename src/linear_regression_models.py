@@ -25,7 +25,7 @@ class LinearRegression(object):
         data_indices = np.arange(n_mini_batches)
         number_of_data_points_in_batch = n_inputs // n_mini_batches
 
-        for _ in tqdm(range(n_epochs)):
+        for _ in range(n_epochs):
             for k in range(number_of_data_points_in_batch):
 
                 chosen_datapoints_indexes = np.random.choice(
@@ -43,7 +43,7 @@ class LinearRegression(object):
                 beta_new = beta - eta * grad_beta
 
                 if np.max(np.abs(beta_new - beta)) <= tol:
-                    print("Converged")  # TODO: Nicer output
+                    #  print("Converged")  # TODO: Nicer output, do we need this??
                     self.beta = beta_new.flatten()
                     return
 
@@ -72,7 +72,6 @@ class LinearRegression(object):
         """
         if not hasattr(self, "beta"):
             raise AttributeError("The model has not yet been fitted")
-        #  X = self.generate_design_matrix(x, y)
         z_tilde = self.beta @ X.T
         return z_tilde
 

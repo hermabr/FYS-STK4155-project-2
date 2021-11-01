@@ -37,7 +37,7 @@ class OrdinaryLeastSquares(LinearRegression):
         loss = np.mean((z.reshape(-1, 1) - X @ beta) ** 2)
         return loss
 
-    def confidence_intervals(self, x, y, z, z_tilde, alpha=0.05):
+    def confidence_intervals(self, X, z, z_tilde, alpha=0.05):
         """Calculates the confidence interval for each beta value
 
         Parameters
@@ -62,7 +62,6 @@ class OrdinaryLeastSquares(LinearRegression):
             sigma_squared : float
                 The predicted sigma squared
         """
-        X = self.generate_design_matrix(x, y)
         N = len(z_tilde)
         Z = stats.norm.ppf(1 - alpha / 2)
         sigma_squared = 1 / (N - len(self.beta) - 1) * np.sum((z - z_tilde) ** 2)
