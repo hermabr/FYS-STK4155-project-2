@@ -15,7 +15,7 @@ from ordinary_least_squares import OrdinaryLeastSquares
 
 def main():
     """creating data"""
-    data = FrankeData(20, 5, test_size=0.2)
+    data = FrankeData(20, 5, test_size=0.2)  # TODO: Add numbers to config
 
     """ making lists with number of epochs, number of minibatches and number of etas """
     number_of_epochs_list = [1] + list(
@@ -29,13 +29,15 @@ def main():
     print(f"number_of_epochs = {number_of_epochs_list}")
     print(f"n_mini_batches_list = {n_mini_batches_list}")
 
-    number_etas = 6  # number of different etas
-    eta_array = np.logspace(-4, 0, number_etas)  # array with different etas
+    eta_multipliers = np.linspace(
+        SMALLEST_ETA, BIGGEST_ETA, NUMBER_OF_ETAS
+    )  # array with different etas
 
     """ making a dictionary for MSE calculated with SGD for OLS. The key is a tuple (number_of_epochs, number_of_minibatches), value is the MSE for that choice"""
     MSE_hyperparametre = {}  # nøkler = (antall epoker, antall_minibatches)
 
-    for eta in eta_array:  # TODO: Do something the the etas?
+    for eta_multiplier in eta_multipliers:  # TODO: Do something the the etas?
+        print(f"ETA_0: {t0/t1 * eta_multiplier}")
         for number_of_epochs in number_of_epochs_list:
             for n_mini_batches in n_mini_batches_list:
                 ols = OrdinaryLeastSquares(
@@ -47,6 +49,7 @@ def main():
                     number_of_epochs,
                     n_mini_batches,
                     tol=10e-7,
+                    learning_multiplier=eta_multiplier,
                 )
                 z_tilde = ols.predict(data.X_test)
                 MSE_ = ols.MSE(data.z_test, z_tilde)
@@ -54,7 +57,7 @@ def main():
                 # MSE_ = MSE(z_test.flatten(),z_pred.flatten())
                 MSE_hyperparametre[(number_of_epochs, n_mini_batches)] = MSE_
 
-    print(MSE_hyperparametre)
+    #  print(MSE_hyperparametre)
 
     """  Plotting te MSE as function of number of epochs and number of minibatches"""
     from mpl_toolkits import mplot3d

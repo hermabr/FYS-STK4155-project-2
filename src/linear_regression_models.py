@@ -2,9 +2,11 @@ import numpy as np
 from tqdm import tqdm
 from autograd import grad
 
+from config import *
+
 
 class LinearRegression(object):
-    def __init__(self, degree, t0=5, t1=50):
+    def __init__(self, degree, t0=t0, t1=t1):
         """A general constructor for the linear regression models
 
         Parameters
@@ -17,7 +19,7 @@ class LinearRegression(object):
         self.t1 = t1
 
     def sgd(
-        self, X, z, n_epochs, n_mini_batches, tol=10e-7
+        self, X, z, n_epochs, n_mini_batches, tol=10e-7, learning_multiplier=1.0
     ):  # TODO: Include a eta function, maybe just change t0, t1
         get_grad = grad(self.loss_function, argnum=2)
         beta = np.random.randn(X.shape[1], 1)
@@ -39,7 +41,7 @@ class LinearRegression(object):
                 else:
                     grad_beta = get_grad(X_batch, z_batch, beta)
 
-                eta = self.learning_schedule(k)
+                eta = self.learning_schedule(k) * learning_multiplier
                 beta_new = beta - eta * grad_beta
 
                 if np.max(np.abs(beta_new - beta)) <= tol:
