@@ -1,5 +1,3 @@
-DEFAULT_NOISE_LEVEL = 0.2
-
 # Linear regression
 t0 = 5
 t1 = 50

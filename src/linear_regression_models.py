@@ -3,6 +3,7 @@ from tqdm import tqdm
 from autograd import grad
 
 from config import *
+from config.linear_regression import *
 
 
 class LinearRegression(object):

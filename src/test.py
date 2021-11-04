@@ -2,7 +2,7 @@ from generate_data import FrankeData
 from ordinary_least_squares import OrdinaryLeastSquares
 from ridge import Ridge
 
-
+# TODO: test them against the scikit-learn implementation
 def test_ols_sgd():
     data = FrankeData(50, 5, test_size=0.2)
     ols = OrdinaryLeastSquares(5)

@@ -1,2 +1,12 @@
+def analyze_franke():
+    pass
+
+
+def analyze_cancer_data():
+    pass
+
+
 def main():
-    assert False, "This module is not meant to be executed directly."
+    print("HELLO FROM FFNN")
+    analyze_franke()
+    analyze_cancer_data()

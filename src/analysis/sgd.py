@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 
 from plot import plot_3d_contour
 from config import *
+from config.linear_regression import *
 from ridge import Ridge
 from generate_data import FrankeData
 from ordinary_least_squares import OrdinaryLeastSquares
@@ -69,11 +70,6 @@ def main():
     print(n_mini_batches_list_mesh)
     print(MSE_np)
 
-    for key, value in MSE_hyperparametre.items():
-        print(f"{key} = {value}")
-    #  #  print(MSE_hyperparametre)
-    exit(1)
-
     """  Plotting te MSE as function of number of epochs and number of minibatches"""
     #  epochs_list_mesh, n_mini_batches_list_mesh = np.meshgrid(
     #      number_of_epochs_list, n_mini_batches_list
@@ -82,28 +78,29 @@ def main():
     #  array_epoker = np.ravel(epochs_list_mesh)
     #  array_antall_batcher = np.ravel(n_mini_batches_list_mesh)
 
-    MSE_list = []
-    for number_of_epochs in number_of_epochs_list:
-        for n_mini_batches in n_mini_batches_list:
-            a = MSE_hyperparametre[
-                number_of_epochs, n_mini_batches
-            ]  # extracting MSE from the dictionary for a given key (number_of_epochs, number_of_minibatches)
-            MSE_list.append(a)
-
-    MSE_array = np.array(MSE_list)
+    #  MSE_list = []
+    #  for number_of_epochs in number_of_epochs_list:
+    #      for n_mini_batches in n_mini_batches_list:
+    #          a = MSE_hyperparametre[
+    #              number_of_epochs, n_mini_batches
+    #          ]  # extracting MSE from the dictionary for a given key (number_of_epochs, number_of_minibatches)
+    #          MSE_list.append(a)
+    #
+    #  MSE_array = np.array(MSE_list)
 
     #  MSE_matrix = np.reshape(MSE_array, np.shape(epochs_list_mesh))
 
     #  "Number of epochs"
     #  "Number of mini batches"
     #  "MSE"
-    #  ax = plt.axes(projection="3d")
-    #  ax.contour3D(epochs_list_mesh, n_mini_batches_list_mesh, MSE_matrix)
-    #  ax.set_xlabel("Number of epochs")
-    #  ax.set_ylabel("Number of mini batches")
-    #  ax.set_zlabel("MSE")
-    #
-    #  plt.show()
+
+    ax = plt.axes(projection="3d")
+    ax.contour3D(epochs_list_mesh, n_mini_batches_list_mesh, MSE_np)
+    ax.set_xlabel("Number of epochs")
+    ax.set_ylabel("Number of mini batches")
+    ax.set_zlabel("MSE")
+
+    plt.show()
 
     """ Finding the key (n_epochs, n_minibatches) that corresponds to the lowest MSE. And extracting that MSE value."""
 

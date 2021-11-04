@@ -22,10 +22,8 @@ class Ridge(LinearRegression):
 
         Parameters
         ----------
-            x : np.array
-                The x values for which to fit the model
-            y : np.array
-                The y values for which to fit the model
+            X : np.array
+                The X design matrix for which to fit the model
             z : np.array
                 The z values for which to fit the model
         """
