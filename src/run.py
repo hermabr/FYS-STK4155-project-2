@@ -1,7 +1,7 @@
 import argparse
 import numpy as np
 
-from analysis import sgd
+from analysis import sgd, FFNN
 
 
 if __name__ == "__main__":
@@ -15,6 +15,12 @@ if __name__ == "__main__":
         action="store_true",
     )
     parser.add_argument(
+        "-f",
+        "--ffnn",
+        help="To run the analysis for the Feedforward neural network",
+        action="store_true",
+    )
+    parser.add_argument(
         "-a",
         "--all",
         help="To run all the analyzes",
@@ -25,3 +31,5 @@ if __name__ == "__main__":
         parser.print_help()
     if args.sgd or args.all:
         sgd.main()
+    if args.ffnn or args.all:
+        FFNN.main()
