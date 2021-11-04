@@ -7,9 +7,7 @@ from analysis import sgd
 if __name__ == "__main__":
     np.random.seed(42)
 
-    parser = argparse.ArgumentParser(
-        description="Get plots for the simulation for the penning trap problem"
-    )
+    parser = argparse.ArgumentParser(description="TODO: Description")
     parser.add_argument(
         "-s",
         "--sgd",

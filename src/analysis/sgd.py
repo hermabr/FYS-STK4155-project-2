@@ -1,9 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from config import *
+from ridge import Ridge
 from generate_data import FrankeData
 from ordinary_least_squares import OrdinaryLeastSquares
-from ridge import Ridge
 
 
 # TODO: Why are these imported and not used?
@@ -16,18 +17,17 @@ def main():
     """creating data"""
     data = FrankeData(20, 5, test_size=0.2)
 
-    EPOCH_STEP_SIZE = 10
-    HIGHEST_EPOCH = 50
-
     """ making lists with number of epochs, number of minibatches and number of etas """
     number_of_epochs_list = [1] + list(
         range(EPOCH_STEP_SIZE, HIGHEST_EPOCH + EPOCH_STEP_SIZE, EPOCH_STEP_SIZE)
+    )  # TODO: Increase this before the final plotting result
+
+    n_mini_batches_list = list(
+        range(N_MINI_BATCH_START, N_MINI_BATCH_END, N_MINI_BATCH_STEP_SIZE)
     )
 
-    n_mini_batches_list = list(range(2, 120, 16))
-    print(
-        f"n_mini_batches_list = {n_mini_batches_list}"
-    )  # [2, 18, 34, 50, 66, 82, 98, 114]
+    print(f"number_of_epochs = {number_of_epochs_list}")
+    print(f"n_mini_batches_list = {n_mini_batches_list}")
 
     number_etas = 6  # number of different etas
     eta_array = np.logspace(-4, 0, number_etas)  # array with different etas
