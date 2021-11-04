@@ -173,3 +173,7 @@ def main():
     print(
         f"Using Ridge with explicit beta and lambda = {key_min_ridge} we got MSE = {MSE_for_different_lambdas_dict[key_min_ridge]}"
     )
+
+
+if __name__ == "__main__":
+    main()
