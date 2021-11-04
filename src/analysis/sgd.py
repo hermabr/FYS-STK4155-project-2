@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+from plot import plot_3d_contour
 from config import *
 from ridge import Ridge
 from generate_data import FrankeData
@@ -36,38 +37,50 @@ def main():
     """ making a dictionary for MSE calculated with SGD for OLS. The key is a tuple (number_of_epochs, number_of_minibatches), value is the MSE for that choice"""
     MSE_hyperparametre = {}  # nøkler = (antall epoker, antall_minibatches)
 
-    for eta_multiplier in eta_multipliers:  # TODO: Do something the the etas?
-        print(f"ETA_0: {t0/t1 * eta_multiplier}")
-        for number_of_epochs in number_of_epochs_list:
-            for n_mini_batches in n_mini_batches_list:
-                ols = OrdinaryLeastSquares(
-                    5
-                )  # choosing 5ht degree polynoma to fit the franke function
-                ols.sgd(
-                    data.X_train,
-                    data.z_train,
-                    number_of_epochs,
-                    n_mini_batches,
-                    tol=10e-7,
-                    learning_multiplier=eta_multiplier,
-                )
-                z_tilde = ols.predict(data.X_test)
-                MSE_ = ols.MSE(data.z_test, z_tilde)
+    #  for eta_multiplier in eta_multipliers:  # TODO: Do something the the etas?
+    #      print(f"ETA_0: {t0/t1 * eta_multiplier}")
+    MSE_np = np.zeros((len(n_mini_batches_list), len(number_of_epochs_list)))
+    for i, number_of_epochs in enumerate(number_of_epochs_list):
+        for j, n_mini_batches in enumerate(n_mini_batches_list):
+            ols = OrdinaryLeastSquares(
+                5
+            )  # choosing 5ht degree polynoma to fit the franke function
+            ols.sgd(
+                data.X_train,
+                data.z_train,
+                number_of_epochs,
+                n_mini_batches,
+                tol=10e-7,
+                #  learning_multiplier=eta_multiplier,
+            )
+            z_tilde = ols.predict(data.X_test)
+            MSE_ = ols.MSE(data.z_test, z_tilde)
 
-                # MSE_ = MSE(z_test.flatten(),z_pred.flatten())
-                MSE_hyperparametre[(number_of_epochs, n_mini_batches)] = MSE_
+            # MSE_ = MSE(z_test.flatten(),z_pred.flatten())
+            MSE_hyperparametre[(number_of_epochs, n_mini_batches)] = MSE_
+            MSE_np[j, i] = MSE_
 
-    #  print(MSE_hyperparametre)
-
-    """  Plotting te MSE as function of number of epochs and number of minibatches"""
-    from mpl_toolkits import mplot3d
-
+    # convert MSE_hyperparametre to a numpy array
     epochs_list_mesh, n_mini_batches_list_mesh = np.meshgrid(
         number_of_epochs_list, n_mini_batches_list
     )
 
-    array_epoker = np.ravel(epochs_list_mesh)
-    array_antall_batcher = np.ravel(n_mini_batches_list_mesh)
+    print(epochs_list_mesh)
+    print(n_mini_batches_list_mesh)
+    print(MSE_np)
+
+    for key, value in MSE_hyperparametre.items():
+        print(f"{key} = {value}")
+    #  #  print(MSE_hyperparametre)
+    exit(1)
+
+    """  Plotting te MSE as function of number of epochs and number of minibatches"""
+    #  epochs_list_mesh, n_mini_batches_list_mesh = np.meshgrid(
+    #      number_of_epochs_list, n_mini_batches_list
+    #  )
+    #
+    #  array_epoker = np.ravel(epochs_list_mesh)
+    #  array_antall_batcher = np.ravel(n_mini_batches_list_mesh)
 
     MSE_list = []
     for number_of_epochs in number_of_epochs_list:
@@ -79,15 +92,18 @@ def main():
 
     MSE_array = np.array(MSE_list)
 
-    MSE_matrix = np.reshape(MSE_array, np.shape(epochs_list_mesh))
+    #  MSE_matrix = np.reshape(MSE_array, np.shape(epochs_list_mesh))
 
-    ax = plt.axes(projection="3d")
-    ax.contour3D(epochs_list_mesh, n_mini_batches_list_mesh, MSE_matrix)
-    ax.set_xlabel("Number of epochs")
-    ax.set_ylabel("Number of mini batches")
-    ax.set_zlabel("MSE")
-
-    plt.show()
+    #  "Number of epochs"
+    #  "Number of mini batches"
+    #  "MSE"
+    #  ax = plt.axes(projection="3d")
+    #  ax.contour3D(epochs_list_mesh, n_mini_batches_list_mesh, MSE_matrix)
+    #  ax.set_xlabel("Number of epochs")
+    #  ax.set_ylabel("Number of mini batches")
+    #  ax.set_zlabel("MSE")
+    #
+    #  plt.show()
 
     """ Finding the key (n_epochs, n_minibatches) that corresponds to the lowest MSE. And extracting that MSE value."""
 
