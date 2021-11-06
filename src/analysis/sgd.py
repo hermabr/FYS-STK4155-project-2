@@ -43,9 +43,7 @@ def main():
     # print(f"epochs_raveled = {epochs_raveled}")
     # print(f"minibatches_raveled = {minibatches_raveled}")
 
-    eta_multipliers = np.linspace(
-        SMALLEST_ETA, BIGGEST_ETA, NUMBER_OF_ETAS
-    )  # array with different etas
+
 
     """ making a dictionary for MSE calculated with SGD for OLS. The key is a tuple (number_of_epochs, number_of_minibatches), value is the MSE for that choice"""
     MSE_hyperparametre = {}  # nøkler = (antall epoker, antall_minibatches)
@@ -133,29 +131,38 @@ def main():
     )
 
 
-    """  MSE calculated with SGD for Ridge. The key is a tuple (number_of_epochs, number_of_minibatches), value is the MSE for that choice"""
+    ''' Exploring the MSE as functions of the hyper-parameter λ and the learning rate η for Ridge'''
     MSE_for_different_lambdas_Ridge = {}  # key = lambda, value = MSE for that choice
 
     # setting number of epochs and number of minibatches to the value that gives lowest MSE using OLS (from the hyperparametr dictionary made in the code above)
-    n_of_epochs = key_min[0]
-    n_of_mini_batches = key_min[1]
+    optimal_n_of_epochs = key_min[0]
+    optimal_n_of_mini_batches = key_min[1]
 
     n_of_lambdas = 5
     lambdas = np.logspace(-5, -1, n_of_lambdas)
 
-    for lmb in lambdas:
-        ridge = Ridge(5, lmb)  # choosing 5ht degree polynoma to fit the franke function
-        ridge.sgd(
-            data.X_train,
-            data.z_train,
-            number_of_epochs,
-            n_mini_batches,
-            tol=10e-7,
-        )
-        z_tilde = ridge.predict(data.X_test)
-        MSE_ = ridge.MSE(data.z_test, z_tilde)
+    eta_multipliers = np.linspace(
+        SMALLEST_ETA, BIGGEST_ETA, NUMBER_OF_ETAS
+    )  # array with different etas
 
-        MSE_for_different_lambdas_Ridge[lmb] = MSE_
+
+
+    for multiplier in eta_multipliers:
+        for lmb in lambdas:
+            ridge = Ridge(5, lmb)  # choosing 5ht degree polynoma to fit the franke function
+            ridge.sgd(
+                data.X_train,
+                data.z_train,
+                optimal_n_of_epochs,
+                optimal_n_of_mini_batches,
+                tol=10e-7,
+                learning_multiplier = multiplier
+            )
+            #TODO: find a way to extract the initial eta values into a list
+            z_tilde = ridge.predict(data.X_test)
+            MSE_ = ridge.MSE(data.z_test, z_tilde)
+
+            MSE_for_different_lambdas_Ridge[lmb] = MSE_
 
     print(f'Dictionary (key) = lambda, value = MSE: {MSE_for_different_lambdas_Ridge}')
 
@@ -204,9 +211,6 @@ def main():
 
 
 
-
-    ''' Exploring the MSE as functions of the hyper-parameter λ and the learning rate η '''
-    
 
 
 
