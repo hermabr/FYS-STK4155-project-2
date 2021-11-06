@@ -7,6 +7,8 @@ from config.linear_regression import *
 from ridge import Ridge
 from generate_data import FrankeData
 from ordinary_least_squares import OrdinaryLeastSquares
+from matplotlib import cm
+from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
 
 # TODO: Why are these imported and not used?
@@ -28,8 +30,18 @@ def main():
         range(N_MINI_BATCH_START, N_MINI_BATCH_END, N_MINI_BATCH_STEP_SIZE)
     )
 
-    print(f"number_of_epochs = {number_of_epochs_list}")
-    print(f"n_mini_batches_list = {n_mini_batches_list}")
+    mesh_epochs, mesh_minibatches = np.meshgrid(number_of_epochs_list, n_mini_batches_list)
+
+    # print(f"number_of_epochs_list = {number_of_epochs_list}")
+    # print(f"n_mini_batches_list = {n_mini_batches_list}")
+    #
+    # print(f"mesh_epochs = {mesh_epochs}")
+    # print(f"mesh_minibatches = {mesh_minibatches}")
+
+    epochs_raveled = np.ravel(mesh_epochs)
+    minibatches_raveled = np.ravel(mesh_minibatches)
+    # print(f"epochs_raveled = {epochs_raveled}")
+    # print(f"minibatches_raveled = {minibatches_raveled}")
 
     eta_multipliers = np.linspace(
         SMALLEST_ETA, BIGGEST_ETA, NUMBER_OF_ETAS
@@ -40,9 +52,18 @@ def main():
 
     #  for eta_multiplier in eta_multipliers:  # TODO: Do something the the etas?
     #      print(f"ETA_0: {t0/t1 * eta_multiplier}")
-    MSE_np = np.zeros((len(n_mini_batches_list), len(number_of_epochs_list)))
+    m = np.shape(mesh_epochs)[0]
+    n = np.shape(mesh_epochs)[1]
+
+    MSE_matrix = np.zeros((m,n))
+
     for i, number_of_epochs in enumerate(number_of_epochs_list):
+        # print(f'i = {i}')
+        # print(f'number_of_epochs = {number_of_epochs}')
         for j, n_mini_batches in enumerate(n_mini_batches_list):
+            # print(i,j)
+            # print(number_of_epochs, n_mini_batches)
+
             ols = OrdinaryLeastSquares(
                 5
             )  # choosing 5ht degree polynoma to fit the franke function
@@ -59,48 +80,37 @@ def main():
 
             # MSE_ = MSE(z_test.flatten(),z_pred.flatten())
             MSE_hyperparametre[(number_of_epochs, n_mini_batches)] = MSE_
-            MSE_np[j, i] = MSE_
+            #print(f'MSE_hyperparametre{[(number_of_epochs, n_mini_batches)]} = {MSE_}')
+            MSE_matrix[j,i] = MSE_
+            #print(f'MSE_matrix{[(j, i)]} = {MSE_}')
 
-    # convert MSE_hyperparametre to a numpy array
-    epochs_list_mesh, n_mini_batches_list_mesh = np.meshgrid(
-        number_of_epochs_list, n_mini_batches_list
-    )
 
-    print(epochs_list_mesh)
-    print(n_mini_batches_list_mesh)
-    print(MSE_np)
+    # print(f'MSE_hyperparametre = {MSE_hyperparametre}')
+    # print(f'length MSE_hyperparametre = {len(MSE_hyperparametre)}')
+    #
+    # print(f'MSE_matrix = {MSE_matrix}')
+    # print(f'MSE_matrix = {np.shape(MSE_matrix)}')
+
 
     """  Plotting te MSE as function of number of epochs and number of minibatches"""
-    #  epochs_list_mesh, n_mini_batches_list_mesh = np.meshgrid(
-    #      number_of_epochs_list, n_mini_batches_list
-    #  )
-    #
-    #  array_epoker = np.ravel(epochs_list_mesh)
-    #  array_antall_batcher = np.ravel(n_mini_batches_list_mesh)
 
-    #  MSE_list = []
-    #  for number_of_epochs in number_of_epochs_list:
-    #      for n_mini_batches in n_mini_batches_list:
-    #          a = MSE_hyperparametre[
-    #              number_of_epochs, n_mini_batches
-    #          ]  # extracting MSE from the dictionary for a given key (number_of_epochs, number_of_minibatches)
-    #          MSE_list.append(a)
-    #
-    #  MSE_array = np.array(MSE_list)
+    fig = plt.figure()
+    ax = fig.gca(projection='3d')
 
-    #  MSE_matrix = np.reshape(MSE_array, np.shape(epochs_list_mesh))
 
-    #  "Number of epochs"
-    #  "Number of mini batches"
-    #  "MSE"
+    # Plot the surface
+    surf = ax.plot_surface(mesh_epochs, mesh_minibatches, MSE_matrix, cmap=cm.coolwarm,linewidth=0, antialiased=False)
 
-    ax = plt.axes(projection="3d")
-    ax.contour3D(epochs_list_mesh, n_mini_batches_list_mesh, MSE_np)
-    ax.set_xlabel("Number of epochs")
-    ax.set_ylabel("Number of mini batches")
-    ax.set_zlabel("MSE")
-
+    # Add a color bar which maps values to colors.
+    fig.colorbar(surf, shrink=0.5, aspect=5)
+    plt.xlabel('number of epochs')
+    plt.ylabel('number of minibatches')
+    plt.title('z = MSE')
     plt.show()
+
+
+
+
 
     """ Finding the key (n_epochs, n_minibatches) that corresponds to the lowest MSE. And extracting that MSE value."""
 
@@ -121,6 +131,7 @@ def main():
     print(
         f"MSE for 5th order polynoma using explicit expression for beta from OLS = {ols.MSE(z_tilde, data.z_test)}"
     )
+
 
     """  MSE calculated with SGD for Ridge. The key is a tuple (number_of_epochs, number_of_minibatches), value is the MSE for that choice"""
     MSE_for_different_lambdas_Ridge = {}  # key = lambda, value = MSE for that choice
@@ -146,18 +157,19 @@ def main():
 
         MSE_for_different_lambdas_Ridge[lmb] = MSE_
 
-    print(MSE_for_different_lambdas_Ridge)
+    print(f'Dictionary (key) = lambda, value = MSE: {MSE_for_different_lambdas_Ridge}')
 
     key_min_ridge = min(
         MSE_for_different_lambdas_Ridge.keys(),
         key=(lambda k: MSE_for_different_lambdas_Ridge[k]),
     )
 
-    print(MSE_for_different_lambdas_Ridge)
 
     print(
         f"With SGD we found the minimal MSE = {MSE_for_different_lambdas_Ridge[key_min_ridge]}, for lambda = {key_min_ridge}"
     )
+
+
 
     """ Comparing to 5th order polynoma fit that uses explicit solution for beta using Ridge"""
 
@@ -189,6 +201,14 @@ def main():
     print(
         f"Using Ridge with explicit beta and lambda = {key_min_ridge} we got MSE = {MSE_for_different_lambdas_dict[key_min_ridge]}"
     )
+
+
+
+
+    ''' Exploring the MSE as functions of the hyper-parameter λ and the learning rate η '''
+    
+
+
 
 
 if __name__ == "__main__":
