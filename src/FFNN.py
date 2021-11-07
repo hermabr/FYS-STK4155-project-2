@@ -103,6 +103,9 @@ class NeuralNetwork:  # <---- this may need to change for LogReg
 
     def backpropagation(self):
         # Do we need more here? - we will find out when testing :)
+        # print(self.probabilities)
+        # print(self.Y_data)
+        # exit(1)
         error_output = self.probabilities - self.Y_data
         error_hidden = error_output @ self.output_weights.T * self.a_h * (1 - self.a_h)
 
