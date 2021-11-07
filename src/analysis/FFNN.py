@@ -27,7 +27,7 @@ def main():
 
     neuralnetwork.train()
     #TODO: error in dimentionality in the backpropagation method in the NeuralNetwork class. Am using the class wrong?
-    z_predict = neuralnetwork.predict(X_train)
+    z_predict = neuralnetwork.predict(X_test)
 
     print(f'Accuracy score = {accuracy_score_numpy}')
 
