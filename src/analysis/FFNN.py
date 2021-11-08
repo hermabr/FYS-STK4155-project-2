@@ -27,31 +27,34 @@ def main():
     neuralnetwork = NeuralNetwork(data.X_train, data.z_train, activation = 'sigmoid')
 
     neuralnetwork.train()
-    #TODO: error in dimentionality in the backpropagation method in the NeuralNetwork class. Am using the class wrong? - just a missing dim:)
+
     z_predict = neuralnetwork.predict(data.X_test)
-    
-    print(f'Accuracy score = {accuracy_score_numpy}')
+
+    print(f' z_test = {data.z_test}')
+    print(f'z_predict = {z_predict}')
+    print(f'Accuracy score = {accuracy_score_numpy(data.z_test, z_predict)}')
+    #TODO: we are getting an accuracy score = 0, need to fix :)
 
 
-    ''' scikitlearn implementation'''
-    from sklearn.neural_network import MLPClassifier
-    # store models for later use
-    eta_vals = np.logspace(-5, 1, 7)
-    lmbd_vals = np.logspace(-5, 1, 7)
-    DNN_scikit = np.zeros((len(eta_vals), len(lmbd_vals)), dtype=object)
-
-    for i, eta in enumerate(eta_vals):
-        for j, lmbd in enumerate(lmbd_vals):
-            dnn = MLPClassifier(hidden_layer_sizes=N_HIDDEN_NEURONS, activation='sigmoid',
-                                alpha=lmbd, learning_rate_init=eta, max_iter=EPOCHS)
-            dnn.fit(data.X_train, data.z_train)
-
-            DNN_scikit[i][j] = dnn
-
-            print("Learning rate  = ", eta)
-            print("Lambda = ", lmbd)
-            print("Accuracy score on test set: ", dnn.score(X_test, Y_test))
-            print()
+    # ''' scikitlearn implementation'''
+    # from sklearn.neural_network import MLPClassifier
+    # # store models for later use
+    # eta_vals = np.logspace(-5, 1, 7)
+    # lmbd_vals = np.logspace(-5, 1, 7)
+    # DNN_scikit = np.zeros((len(eta_vals), len(lmbd_vals)), dtype=object)
+    #
+    # for i, eta in enumerate(eta_vals):
+    #     for j, lmbd in enumerate(lmbd_vals):
+    #         dnn = MLPClassifier(hidden_layer_sizes=N_HIDDEN_NEURONS, activation='sigmoid',
+    #                             alpha=lmbd, learning_rate_init=eta, max_iter=EPOCHS)
+    #         dnn.fit(data.X_train, data.z_train)
+    #
+    #         DNN_scikit[i][j] = dnn
+    #
+    #         print("Learning rate  = ", eta)
+    #         print("Lambda = ", lmbd)
+    #         print("Accuracy score on test set: ", dnn.score(X_test, Y_test))
+    #         print()
 
 
     # '''copypasted code to find optimal hyperparameters'''
