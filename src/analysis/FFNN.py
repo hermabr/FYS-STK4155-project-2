@@ -22,15 +22,15 @@ def main():
     # analyze_franke()
     # analyze_cancer_data()
 
-
+    ''' FFNN implementation '''
     data = FrankeData(20, 5, test_size=0.2)
     neuralnetwork = NeuralNetwork(data.X_train, data.z_train, activation = 'sigmoid')
 
-    # neuralnetwork.train()
-    # #TODO: error in dimentionality in the backpropagation method in the NeuralNetwork class. Am using the class wrong?
-    # z_predict = neuralnetwork.predict(X_test)
-    #
-    # print(f'Accuracy score = {accuracy_score_numpy}')
+    neuralnetwork.train()
+    #TODO: error in dimentionality in the backpropagation method in the NeuralNetwork class. Am using the class wrong? - just a missing dim:)
+    z_predict = neuralnetwork.predict(data.X_test)
+    
+    print(f'Accuracy score = {accuracy_score_numpy}')
 
 
     ''' scikitlearn implementation'''
