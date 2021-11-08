@@ -106,7 +106,7 @@ class NeuralNetwork:  # <---- this may need to change for LogReg
         # print(self.probabilities)
         # print(self.Y_data)
         # exit(1)
-        error_output = self.probabilities - self.Y_data
+        error_output = self.probabilities - self.Y_data[0]
         error_hidden = error_output @ self.output_weights.T * self.a_h * (1 - self.a_h)
 
         self.output_weights_gradient = self.a_h.T @ error_output
