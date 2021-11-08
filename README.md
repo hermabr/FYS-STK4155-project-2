@@ -14,11 +14,11 @@ python3 src/run.py [arguments]
 ```bash
 usage: run.py [-h] [-s] [-f] [-a]
 
-TODO: Description
+To run the analysis and the tests
 
 optional arguments:
-  -h, --help  show this help message and exit
-  -s, --sgd   To run the analysis for doing OLS and Ridge regression using the SGD method
-  -f, --ffnn  To run the analysis for the Feedforward neural network
+  -h, --help  show this help message and
+  -s, --sgd   To run the analysis for do
+  -f, --ffnn  To run the analysis for th
   -a, --all   To run all the analyzes
 ```
