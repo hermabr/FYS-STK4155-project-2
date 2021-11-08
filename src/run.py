@@ -7,7 +7,7 @@ from analysis import sgd, FFNN
 if __name__ == "__main__":
     np.random.seed(42)
 
-    parser = argparse.ArgumentParser(description="TODO: Description")
+    parser = argparse.ArgumentParser(description="To run the analysis and the tests")
     parser.add_argument(
         "-s",
         "--sgd",
