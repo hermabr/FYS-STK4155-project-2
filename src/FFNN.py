@@ -30,9 +30,9 @@ class NeuralNetwork:  # <---- this may need to change for LogReg
                 Target values
             activation :
                 Choose activation function among "none","sigmoid","softmax", "none" is sutable for regression 
-            n_hidden_neurons :
+            n_hidden_neurons : int
                 The Number of neurons in hidden layers
-            n_categories :
+            n_categories : int
                 The number of categories
             epochs : int
                 The number of passes of the entire training dataset the algorithm has completed
