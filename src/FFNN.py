@@ -7,7 +7,6 @@ from config.neural_network import *
 
 # copied from lectures
 
-
 class NeuralNetwork:  # <---- this may need to change for LogReg
     def __init__(
         self,
@@ -20,8 +19,31 @@ class NeuralNetwork:  # <---- this may need to change for LogReg
         batch_size=BATCH_SIZE,
         eta=ETA,
         lambda_=LAMBDA_,
-    ):
-
+    ):    
+        """ Class for Neural Network Design
+        
+        Parameters
+        ----------
+            X_data : np.array
+                Matrix for X consists of n data points, m features
+            Y_data : np.array
+                Target values
+            activation :
+                Choose activation function among "none","sigmoid","softmax", "none" is sutable for regression 
+            n_hidden_neurons :
+                The Number of neurons in hidden layers
+            n_categories :
+                The number of categories
+            epochs : int
+                The number of passes of the entire training dataset the algorithm has completed
+            batch_size : int
+                The number of training examples utilized in one iteration
+            eta : float
+                The learning rate
+            lambda_ : float
+                The regularization parameter
+            
+        """
         self.X_data_full = X_data
         self.Y_data_full = Y_data
 
@@ -42,15 +64,63 @@ class NeuralNetwork:  # <---- this may need to change for LogReg
 
     # activation functions https://ml-cheatsheet.readthedocs.io/en/latest/activation_functions.html#leakyrelu
     def sigmoid(self, x):
+        """ Sigmoid function on x
+
+        Parameters
+        ----------
+            x : np.array
+                Data from x dataset
+
+        Returns
+        -------
+            x_sigmoid : np.array
+                Data after sigmoid function
+        """
         return 1 / (1 + np.exp(-x))
 
     def softmax(self, x):
+        """ softmax function on x
+
+        Parameters
+        ----------
+            x : np.array
+                Data from x dataset
+
+        Returns
+        -------
+            x_sofmax : np.array
+                Data after softmax function
+        """
         return np.exp(x) / sum(np.exp(x), axis=0)
 
     def ReLu(self, x):
+        """ ReLu function on x
+
+        Parameters
+        ----------
+            x : np.array
+                Data from x dataset
+
+        Returns
+        -------
+            x_ReLu : np.array
+                Data after ReLu function
+        """
         return max(0, x)
 
     def LeakyRelu(self, x, alpha=0.01):
+        """ LeakyReLu function on x
+
+        Parameters
+        ----------
+            x : np.array
+                Data from x dataset
+
+        Returns
+        -------
+            x_ReLu : np.array
+                Data after LeakyReLu function
+        """
         return max(alpha * x, x)
 
     def create_biases_and_weights(self):
@@ -81,6 +151,17 @@ class NeuralNetwork:  # <---- this may need to change for LogReg
         self.probabilities = exp_term / np.sum(exp_term, axis=1, keepdims=True)
 
     def feed_forward_out(self, X):
+        """
+        Parameters
+        ----------
+            X : np.array
+                Data from x dataset
+
+        Returns
+        -------
+            probabilities : float
+                probabilities of each category
+        """
         # feed-forward for output
         z_h = X @ self.hidden_weights + self.hidden_bias
 
@@ -190,3 +271,5 @@ class NeuralNetwork:  # <---- this may need to change for LogReg
 
 # 6 Adjust hyperparameters (if necessary, network architecture)
 # 6a visualize with heatmap
+
+
