@@ -7,7 +7,7 @@ from config.linear_regression import *
 
 
 class LinearRegression(object):
-    def __init__(self, degree, t0=t0, t1=t1):
+    def __init__(self, degree, t0=T0, t1=T1):
         """A general constructor for the linear regression models
 
         Parameters
