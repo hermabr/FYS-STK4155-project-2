@@ -1,12 +1,37 @@
 import numpy as np
-from sklearn.model_selection import train_test_split
+import pandas as pd
 from config import DEFAULT_NOISE_LEVEL
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
 
 
 class Data:
     def __init__(self, degree):
         """Empty initialized for the abstract data class"""
         self.degree = degree
+
+    def store_data(self, X, z, test_size):
+        """Stores the data, either as only X, and z, or splitting the X, and z in train/test and saving all
+
+        Parameters
+        ----------
+            X : np.array
+                The X data to save
+            z : np.array
+                The z data to save
+            test_size : float/None
+                The test size for which to store the data. None means no test data
+        """
+        if not test_size:
+            self._X = X
+            self._z = z
+        else:
+            (
+                self._X_train,
+                self._X_test,
+                self._z_train,
+                self._z_test,
+            ) = train_test_split(X, z, test_size=test_size)
 
     def scale_data(self, data):
         """Scales the data by scaling to values from 0 to 1, then subtracting the mean
@@ -24,34 +49,6 @@ class Data:
         data = (data - np.min(data)) / (np.max(data) - np.min(data))
         data -= np.mean(data)
         return data
-
-    def store_data(self, x, y, z, test_size):
-        """Stores the data, either as only x, y, and z, or splitting the x, y, and z in train/test and saving all
-
-        Parameters
-        ----------
-            x : np.array
-                The x data to save
-            y : np.array
-                The y data to save
-            z : np.array
-                The z data to save
-            test_size : float/None
-                The test size for which to store the data. None means no test data
-        """
-        x, y, z = np.ravel(x), np.ravel(y), np.ravel(z)
-
-        X = self.generate_design_matrix(x, y)
-        if not test_size:
-            self._X = X
-            self._z = z
-        else:
-            (
-                self._X_train,
-                self._X_test,
-                self._z_train,
-                self._z_test,
-            ) = train_test_split(X, z, test_size=test_size)
 
     def train_test_split(self, test_size):
         """Splits the data into a train and test data by using sklearn train_test_split
@@ -97,35 +94,6 @@ class Data:
             raise AttributeError(
                 f"The franke data does not have the attribute '{name[1:]}'. You can only access 'x', 'y', 'z' if there is no test split, and 'x_train', 'y_train', 'z_train', 'x_test', 'y_test' and 'z_test' if there is a test split"
             )
-
-    def get_number_of_parameters(self):
-        return int((self.degree + 1) * (self.degree + 2) / 2)
-
-    def generate_design_matrix(self, x, y):
-        """Generated a design matrix given x and y values
-
-        Parameters
-        ----------
-            x : np.array
-                The x values for which to generate the design matrix
-            y : np.array
-                The y values for which to generate the design matrix
-
-        Returns
-        -------
-            X : np.array
-                The design matrix for the given x and y values
-        """
-        N = len(x)
-        p = self.get_number_of_parameters()
-        X = np.ones((N, p))
-
-        for i in range(self.degree):
-            q = int((i + 1) * (i + 2) / 2)
-            for j in range(i + 2):
-                X[:, q + j] = x ** (i - j + 1) * y ** j
-
-        return X
 
     @property
     def X(self):
@@ -246,6 +214,55 @@ class FrankeData(Data):
 
         self.store_data(x, y, z, test_size)
 
+    def store_data(self, x, y, z, test_size):
+        """Stores the data, either as only x, y, and z, or splitting the x, y, and z in train/test and saving all
+
+        Parameters
+        ----------
+            x : np.array
+                The x data to save
+            y : np.array
+                The y data to save
+            z : np.array
+                The z data to save
+            test_size : float/None
+                The test size for which to store the data. None means no test data
+        """
+        x, y, z = np.ravel(x), np.ravel(y), np.ravel(z)
+
+        X = self.generate_design_matrix(x, y)
+
+        super().store_data(X, z, test_size)
+
+    def get_number_of_parameters(self):
+        return int((self.degree + 1) * (self.degree + 2) / 2)
+
+    def generate_design_matrix(self, x, y):
+        """Generated a design matrix given x and y values
+
+        Parameters
+        ----------
+            x : np.array
+                The x values for which to generate the design matrix
+            y : np.array
+                The y values for which to generate the design matrix
+
+        Returns
+        -------
+            X : np.array
+                The design matrix for the given x and y values
+        """
+        N = len(x)
+        p = self.get_number_of_parameters()
+        X = np.ones((N, p))
+
+        for i in range(self.degree):
+            q = int((i + 1) * (i + 2) / 2)
+            for j in range(i + 2):
+                X[:, q + j] = x ** (i - j + 1) * y ** j
+
+        return X
+
     @staticmethod
     def FrankeFunction(x, y):
         """The franke function written as a numpy expression
@@ -307,3 +324,12 @@ class FrankeData(Data):
         """
         noise = np.random.normal(loc=0.0, scale=noise_level, size=N)
         return noise
+
+
+class BreastCancerData(Data):
+    def __init__(self, test_size=None):
+        breast_cancer_data = load_breast_cancer()
+        X = breast_cancer_data.data
+        y = breast_cancer_data.target
+
+        self.store_data(X, y, test_size)

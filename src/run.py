@@ -1,7 +1,7 @@
 import argparse
 import numpy as np
 
-from analysis import sgd, FFNN
+from analysis import sgd, FFNN, logistic
 
 
 if __name__ == "__main__":
@@ -21,6 +21,12 @@ if __name__ == "__main__":
         action="store_true",
     )
     parser.add_argument(
+        "-l",
+        "--logistic",
+        help="To run the analysis for the logistic regression",
+        action="store_true",
+    )
+    parser.add_argument(
         "-a",
         "--all",
         help="To run all the analyzes",
@@ -33,3 +39,5 @@ if __name__ == "__main__":
         sgd.main()
     if args.ffnn or args.all:
         FFNN.main()
+    if args.logistic or args.all:
+        logistic.main()

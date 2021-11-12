@@ -1,10 +1,9 @@
 import numpy as np
 
-""" Logistic Regression from IN3050, modified """
 
-class CommonClassifier():
+class CommonClassifier:
     """Common methods for classifiers"""
-    
+
     def accuracy(self, X_test, y_test):
         """Gets the accuracy based on X_test and y_test
 
@@ -16,11 +15,12 @@ class CommonClassifier():
                 test set for data y
         """
         pred = self.predict(X_test)
-        
+
         if len(pred.shape) > 1:
             pred = pred[:, 0]
-        
+
         return sum(pred == y_test) / len(pred)
+
 
 class LogisticRegression(CommonClassifier):
     """A general constructor for the logistic regression models
@@ -31,7 +31,7 @@ class LogisticRegression(CommonClassifier):
             A CommonClassifier class used for regression model
     """
 
-    def fit(self, X_train, y_train, eta = 0.1, epochs=10):
+    def fit(self, X_train, y_train, eta=0.1, epochs=10):
         """Abstract method for fitting the linear model
 
         Parameters
@@ -45,17 +45,18 @@ class LogisticRegression(CommonClassifier):
             epochs : int
                 Number of epoch to train model
         """
-        
+
         (k, m) = X_train.shape
-        X_train = add_bias(X_train)
-        
-        self.weights = weights = np.zeros(m + 1)
-        
+        #  X_train = add_bias(X_train) # TODO: add bias to X_train
+
+        #  self.weights = weights = np.zeros(m + 1)
+        self.weights = weights = np.zeros(m)
+
         for e in range(epochs):
-            weights -= eta / k *  X_train.T @ (self.forward(X_train) - y_train)      
-    
+            weights -= eta / k * X_train.T @ (self.forward(X_train) - y_train)
+
     def logistic_sigmoid(self, x):
-        """ Sigmoid function on x
+        """Sigmoid function on x
 
         Parameters
         ----------
@@ -67,11 +68,11 @@ class LogisticRegression(CommonClassifier):
             x_sigmoid : np.array
                 Data after sigmoid function
         """
-        x_sigmoid = 1 / ( 1 + np.exp(-x))
+        x_sigmoid = 1 / (1 + np.exp(-x))
         return x_sigmoid
-    
+
     def forward(self, X):
-        """ Takes a step forward in network
+        """Takes a step forward in network
 
         Parameters
         ----------
@@ -85,9 +86,9 @@ class LogisticRegression(CommonClassifier):
         """
         forward_step = self.logistic_sigmoid(X @ self.weights)
         return forward_step
-    
+
     def score(self, z):
-        """ Gets the current score
+        """Gets the current score
 
         Parameters
         ----------
@@ -99,12 +100,12 @@ class LogisticRegression(CommonClassifier):
             score : float
                 score for z
         """
-        #z = add_bias(x)
+        # z = add_bias(x)
         score = self.forward(z)
         return score
-    
+
     def predict(self, z, threshold=0.5):
-        """ Takes a step forward in network and return score result
+        """Takes a step forward in network and return score result
 
         Parameters
         ----------
@@ -118,6 +119,6 @@ class LogisticRegression(CommonClassifier):
             score result : np.array
                 1 if score value is bigger then threshold, 0 if not
         """
-        #z = add_bias(x)
+        # z = add_bias(x)
         score = self.forward(z)
-        return (score > threshold).astype('int')
+        return (score > threshold).astype("int")

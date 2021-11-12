@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 
 from plot import surface_plot, heat_plot, line_plot
 from config import *
@@ -143,6 +142,7 @@ def main():
         y_label="Minibatch",
         selected_idx=min_mse_index,
     )
+    mesh_epochs, mesh_minibatches = np.meshgrid(EPOCHS, MINIBATCHES)
     surface_plot(
         title="MSE as function of number of epochs and number of minibatches for OLS using SGD",
         x=mesh_epochs,
