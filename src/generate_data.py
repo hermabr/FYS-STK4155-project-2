@@ -343,7 +343,7 @@ class FrankeData(Data):
 
 
 class BreastCancerData(Data):
-    def __init__(self, test_size=None, intercept=True, scale_data=True):
+    def __init__(self, test_size=None, intercept=False, scale_data=True):
         breast_cancer_data = load_breast_cancer()
         X = breast_cancer_data.data
         y = breast_cancer_data.target
@@ -362,4 +362,4 @@ class BreastCancerData(Data):
             data[:, i] = (data[:, i] - np.min(data[:, i])) / (
                 np.max(data[:, i]) - np.min(data[:, i])
             )
-        return data
+        return data - np.mean(data)
