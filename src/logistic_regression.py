@@ -1,124 +1,49 @@
 import numpy as np
+from linear_regression_models import LinearRegression
+from generate_data import BreastCancerData
 
 
-class CommonClassifier:
-    """Common methods for classifiers"""
+class LogisticRegression(LinearRegression):
+    def __init__(self):
+        pass
 
-    def accuracy(self, X_test, y_test):
-        """Gets the accuracy based on X_test and y_test
+    def _sigmoid(self, z):
+        return 1 / (1 + np.exp(-z))
 
-        Parameters
-        ----------
-            X_test : np.array
-                test set for data X
-            y_test : np.array
-                test set for data y
-        """
-        pred = self.predict(X_test)
+    def _cost_function(self, X, y):
+        m = len(y)
+        h = self._sigmoid(np.dot(X, self.theta))
+        J = -(1 / m) * np.sum(y * np.log(h) + (1 - y) * np.log(1 - h))
+        return J
 
-        if len(pred.shape) > 1:
-            pred = pred[:, 0]
+    def _gradient_descent(self, X, y, alpha, iterations):
+        m = len(y)
+        for i in range(iterations):
+            h = self._sigmoid(np.dot(X, self.theta))
+            gradient = (1 / m) * np.dot(X.T, h - y)
+            self.theta = self.theta - alpha * gradient
+            #  print(self._cost_function(X, y))
+        return self.theta
 
-        return sum(pred == y_test) / len(pred)
+    def fit(self, X, y, alpha=0.01, iterations=1000):
+        self.theta = np.zeros(X.shape[1])
+        self.theta = self._gradient_descent(X, y, alpha, iterations)
+
+    def predict(self, X):
+        return self._sigmoid(np.dot(X, self.theta))
 
 
-class LogisticRegression(CommonClassifier):
-    """A general constructor for the logistic regression models
+if __name__ == "__main__":
+    np.random.seed(42)
 
-    Parameters
-    ----------
-        CommonClassifier : CommonClassifier class
-            A CommonClassifier class used for regression model
-    """
+    data = BreastCancerData(test_size=0.2, scale_data=True)
+    logistic = LogisticRegression()
 
-    def fit(self, X_train, y_train, eta=0.1, epochs=10):
-        """Abstract method for fitting the linear model
+    for alpha in np.linspace(0.001, 0.1, 21):
+        logistic.fit(data.X_train, data.z_train, alpha=alpha, iterations=10_000)
+        a = logistic.predict(data.X_train) < 0.5
+        b = data.z_train < 0.5
+        correct = np.sum(a == b) / len(data.z_train)
+        #  print(correct, alpha)
 
-        Parameters
-        ----------
-            X_train : np.array
-                A n x m matrix, n data points, m features
-            y_train : np.array
-                Targets values for training data
-            eta : float
-                The learning rate #https://web.stanford.edu/~jurafsky/slp3/5.pdf
-            epochs : int
-                Number of epoch to train model
-        """
-
-        (k, m) = X_train.shape
-        #  X_train = add_bias(X_train) # TODO: add bias to X_train
-
-        #  self.weights = weights = np.zeros(m + 1)
-        self.weights = weights = np.zeros(m)
-
-        for e in range(epochs):
-            weights -= eta / k * X_train.T @ (self.forward(X_train) - y_train)
-
-    def logistic_sigmoid(self, x):
-        """Sigmoid function on x
-
-        Parameters
-        ----------
-            x : np.array
-                Data from x dataset
-
-        Returns
-        -------
-            x_sigmoid : np.array
-                Data after sigmoid function
-        """
-        x_sigmoid = 1 / (1 + np.exp(-x))
-        return x_sigmoid
-
-    def forward(self, X):
-        """Takes a step forward in network
-
-        Parameters
-        ----------
-            X : np.array
-                Data from X dataset
-
-        Returns
-        -------
-            forward_step : np.array
-                Data after stepping forward
-        """
-        forward_step = self.logistic_sigmoid(X @ self.weights)
-        return forward_step
-
-    def score(self, z):
-        """Gets the current score
-
-        Parameters
-        ----------
-            z : np.array
-                Data from z dataset
-
-        Returns
-        -------
-            score : float
-                score for z
-        """
-        # z = add_bias(x)
-        score = self.forward(z)
-        return score
-
-    def predict(self, z, threshold=0.5):
-        """Takes a step forward in network and return score result
-
-        Parameters
-        ----------
-            z : np.array
-                Data from z dataset
-            threshold : float
-                threshold value for activation
-
-        Returns
-        -------
-            score result : np.array
-                1 if score value is bigger then threshold, 0 if not
-        """
-        # z = add_bias(x)
-        score = self.forward(z)
-        return (score > threshold).astype("int")
+    print(logistic.theta)

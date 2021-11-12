@@ -10,6 +10,22 @@ class Data:
         """Empty initialized for the abstract data class"""
         self.degree = degree
 
+    def add_intercept(self, X):
+        """Adds an intercept to the data
+
+        Parameters
+        ----------
+            X : np.array
+                The data for which to add the intercept
+
+        Returns
+        -------
+            X : np.array
+                The data with an intercept added
+        """
+        return np.hstack((np.ones((X.shape[0], 1)), X))
+        #  return np.concatenate((np.ones((X.shape[0], 1)), X), axis=1)
+
     def store_data(self, X, z, test_size):
         """Stores the data, either as only X, and z, or splitting the X, and z in train/test and saving all
 
@@ -327,9 +343,23 @@ class FrankeData(Data):
 
 
 class BreastCancerData(Data):
-    def __init__(self, test_size=None):
+    def __init__(self, test_size=None, intercept=True, scale_data=True):
         breast_cancer_data = load_breast_cancer()
         X = breast_cancer_data.data
         y = breast_cancer_data.target
 
+        if scale_data:
+            X = self.scale_data(X)
+
+        if intercept:
+            X = self.add_intercept(X)
+
         self.store_data(X, y, test_size)
+
+    def scale_data(self, data):
+        """Scale data per column"""
+        for i in range(data.shape[1]):
+            data[:, i] = (data[:, i] - np.min(data[:, i])) / (
+                np.max(data[:, i]) - np.min(data[:, i])
+            )
+        return data
