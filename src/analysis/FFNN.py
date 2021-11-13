@@ -3,6 +3,11 @@ from config.neural_network import *
 from generate_data import FrankeData
 from FFNN import NeuralNetwork
 import numpy as np
+from generate_data import BreastCancerData
+
+def accuracy_score_numpy(Y_test, Y_pred):
+    return np.sum(Y_test == Y_pred) / len(Y_test)
+
 
 def analyze_franke():
     pass
@@ -22,94 +27,135 @@ def main():
     # analyze_franke()
     # analyze_cancer_data()
 
-    ''' FFNN implementation '''
-    data = FrankeData(20, 5, test_size=0.2)
-    neuralnetwork = NeuralNetwork(data.X_train, data.z_train, activation = 'sigmoid')
+    data = BreastCancerData(test_size=0.2, scale_data=True)
 
-    neuralnetwork.train()
 
-    z_predict = neuralnetwork.predict(data.X_test)
+    ''' own code FFNN implementation '''
 
-    print(f' z_test = {data.z_test}')
-    print(f'z_predict = {z_predict}')
-    print(f'Accuracy score = {accuracy_score_numpy(data.z_test, z_predict)}')
+    # neuralnetwork = NeuralNetwork(data.X_train, data.z_train, activation = 'sigmoid')
+    #
+    # neuralnetwork.train()
+    #
+    # z_predict = neuralnetwork.predict(data.X_test)
+    #
+    # print(f' z_test = {data.z_test}')
+    # print(f'z_predict = {z_predict}')
+    # print(f'Accuracy score = {accuracy_score_numpy(data.z_test, z_predict)}')
     #TODO: we are getting an accuracy score = 0, need to fix :)
 
 
-    # ''' scikitlearn implementation'''
-    # from sklearn.neural_network import MLPClassifier
-    # # store models for later use
-    # eta_vals = np.logspace(-5, 1, 7)
-    # lmbd_vals = np.logspace(-5, 1, 7)
-    # DNN_scikit = np.zeros((len(eta_vals), len(lmbd_vals)), dtype=object)
-    #
-    # for i, eta in enumerate(eta_vals):
-    #     for j, lmbd in enumerate(lmbd_vals):
-    #         dnn = MLPClassifier(hidden_layer_sizes=N_HIDDEN_NEURONS, activation='sigmoid',
-    #                             alpha=lmbd, learning_rate_init=eta, max_iter=EPOCHS)
-    #         dnn.fit(data.X_train, data.z_train)
-    #
-    #         DNN_scikit[i][j] = dnn
-    #
-    #         print("Learning rate  = ", eta)
-    #         print("Lambda = ", lmbd)
-    #         print("Accuracy score on test set: ", dnn.score(X_test, Y_test))
-    #         print()
+
+    ''' scikitlearn implementation'''
+    from sklearn.neural_network import MLPClassifier
+
+    N = 3 #TODO: increase N in final runthroug
+
+    learning_rates = np.linspace(0.005, 0.1, N)
+    lambdas = np.linspace(0.001, 0.1, N)
+
+    number_of_hidden_layers = [1,2,3]
+    nbr_of_hidden_nodes = [30, 40]
 
 
-    # '''copypasted code to find optimal hyperparameters'''
-    # eta_vals = np.logspace(-5, 1, 7)
-    # lmbd_vals = np.logspace(-5, 1, 7)
-    # # store the models for later use
-    # DNN_numpy = np.zeros((len(eta_vals), len(lmbd_vals)), dtype=object)
+    # ffnn_sci = MLPClassifier(
+    #             hidden_layer_sizes= (10,10),
+    #             solver = 'sgd',
+    #             alpha = 0.01,
+    #             learning_rate = 'invscaling',
+    #             learning_rate_init = 0.05)
     #
-    # # grid search
-    # for i, eta in enumerate(eta_vals):
-    #     for j, lmbd in enumerate(lmbd_vals):
-    #         dnn = NeuralNetwork(X_train, Y_train_onehot, eta=eta, lmbd=lmbd, epochs=epochs, batch_size=batch_size,
-    #                             n_hidden_neurons=n_hidden_neurons, n_categories=n_categories)
-    #         dnn.train()
+    # ffnn_sci.fit(data.X_train, data.z_train)
     #
-    #         DNN_numpy[i][j] = dnn
+    # z_test_predict = ffnn_sci.predict(data.X_test)
     #
-    #         test_predict = dnn.predict(X_test)
+    # print(z_test_predict)
     #
-    #         print("Learning rate  = ", eta)
-    #         print("Lambda = ", lmbd)
-    #         print("Accuracy score on test set: ", accuracy_score(Y_test, test_predict))
-    #         print()
+    # print(accuracy_score_numpy(data.z_test, z_test_predict))
+
+    dict_accuracy = {}
+
+#     for lear_rate in learning_rates:
+#         for lmb in lambdas:
+#
+#             ffnn_sci = MLPClassifier(
+#                         hidden_layer_sizes= (20,20),
+#                         solver = 'sgd',
+#                         alpha = lmb,
+#                         learning_rate = 'invscaling',
+#                         learning_rate_init = 0.05)
+# #
+# #             #in sklearn alpha = regularization parameter,
+# #
+#             # print(data.X_train))
+#             # print(type(data.z_train))
+#
+#             ffnn_sci.fit(data.X_train, data.z_train)
+#
+#             z_test_predict = ffnn_sci.predict(data.X_test)
+#
+#             print(z_test_predict)
+#
+#             print(accuracy_score_numpy(data.z_test, z_test_predict))
 
 
-    # # visual representation of grid search
-    # # uses seaborn heatmap, you can also do this with matplotlib imshow
-    # import seaborn as sns
-    #
-    # sns.set()
-    #
-    # train_accuracy = np.zeros((len(eta_vals), len(lmbd_vals)))
-    # test_accuracy = np.zeros((len(eta_vals), len(lmbd_vals)))
-    #
-    # for i in range(len(eta_vals)):
-    #     for j in range(len(lmbd_vals)):
-    #         dnn = DNN_numpy[i][j]
-    #
-    #         train_pred = dnn.predict(X_train)
-    #         test_pred = dnn.predict(X_test)
-    #
-    #         train_accuracy[i][j] = accuracy_score(Y_train, train_pred)
-    #         test_accuracy[i][j] = accuracy_score(Y_test, test_pred)
-    #
-    #
-    # fig, ax = plt.subplots(figsize = (10, 10))
-    # sns.heatmap(train_accuracy, annot=True, ax=ax, cmap="viridis")
-    # ax.set_title("Training Accuracy")
-    # ax.set_ylabel("$\eta$")
-    # ax.set_xlabel("$\lambda$")
-    # plt.show()
-    #
-    # fig, ax = plt.subplots(figsize = (10, 10))
-    # sns.heatmap(test_accuracy, annot=True, ax=ax, cmap="viridis")
-    # ax.set_title("Test Accuracy")
-    # ax.set_ylabel("$\eta$")
-    # ax.set_xlabel("$\lambda$")
-    # plt.show()
+
+
+    for lear_rate in learning_rates:
+        for lmb in lambdas:
+             for nbr_lay in number_of_hidden_layers:
+                for nbr_nodes in nbr_of_hidden_nodes:
+                    hidden_layers_float = np.zeros(nbr_lay)
+
+
+                    # print(nbr_nodes)
+                    # print(hidden_layer_size)
+                    # print(nbr_lay)
+                    for i in range(nbr_lay):
+                        hidden_layers_float[i] = nbr_nodes
+
+                    hidden_layers_int = hidden_layers_float.astype(int)
+
+                    # hidden_layers_float = totuple(hidden_layers_float)
+                    # print(type(hidden_layers_float))
+                    #
+                    #
+                    # for i in range(len(hidden_layers_float)):
+                    #
+
+
+
+                    ffnn_sci = MLPClassifier(
+                                hidden_layer_sizes= hidden_layers_int,
+                                solver = 'sgd',
+                                alpha = lmb,
+                                learning_rate = 'invscaling',
+                                learning_rate_init = lear_rate,
+                                max_iter=200
+                                )
+
+
+                    ffnn_sci.fit(data.X_train, data.z_train)
+
+                    z_test_predict = ffnn_sci.predict(data.X_test)
+
+                    accuracy = accuracy_score_numpy(data.z_test, z_test_predict)
+
+                    dict_accuracy[(lear_rate, lmb, nbr_lay, nbr_nodes)] = accuracy
+    print(dict_accuracy)
+
+
+    max(dict_accuracy)
+    key_max = max(dict_accuracy.keys(), key=(lambda k: dict_accuracy[k]))
+
+    print(f'Maximal accuracy = {dict_accuracy[key_max]}')
+
+    optimal_learning_rate = key_max[0]
+    optimal_lambda = key_max[1]
+    optimal_bnr_lay = key_max[2]
+    optimal_nbr_nodes = key_max[3]
+
+    print('got maximal accuracy for')
+    print(f' Learning rate = {optimal_learning_rate}')
+    print(f' Lambda = {optimal_lambda}')
+    print(f' Number of hidden layers = {optimal_bnr_lay}')
+    print(f' Number of nodes in each layer = {optimal_nbr_nodes}')
