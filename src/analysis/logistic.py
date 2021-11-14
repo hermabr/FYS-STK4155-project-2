@@ -4,44 +4,23 @@ from generate_data import BreastCancerData
 from logistic_regression import LogisticRegression
 from sklearn.linear_model import LogisticRegression as SklearnLogisticRegression
 from sklearn.model_selection import train_test_split, cross_val_score
-
 from sklearn.preprocessing import StandardScaler
-
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, f1_score
 
 
 def accuracy_score_numpy(Y_test, Y_pred):
     return np.sum(Y_test == Y_pred) / len(Y_test)
 
-
-
 def main():
     data = BreastCancerData(test_size=0.2, scale_data=True)
 
 
-
-    #  logistic_regression = LogisticRegression(solver="lbfgs")
-    #  log_reg = LogisticRegression()
-    #  log_reg.verbose = True
-    #  log_reg.fit(data.X_train, np.resize(data.z_train, -1, 1))
-    #  z_dunk = log_reg.predict(data.X_test)
-
-
-
-
-    # print(data.X_train)
-    # print(data.X_test)
-    # print(data.z_train)
-    # print(data.z_test)
-
     ''' code for finding optimal parameters for logistic regression '''
 
-
-
-    N = 3 #TODO: increase N in final runthroug
+    N = 8
 
     dict_accuracy = {} #dictionary key = (learning rate, lambda): accuracy score
     dict_tn= {}
@@ -54,7 +33,10 @@ def main():
     dict_specificity = {}
     dict_F1_score = {}
 
-    learning_rates = np.linspace(0.001, 0.1, N)
+    # learning_rates = np.linspace(0.001, 10, N) #TODO: as the code is now we need this range, but isn't it a bit too big? Something wrong? Ask professor!
+    # lambdas = np.linspace(0.001, 2, N)
+
+    learning_rates = np.linspace(0.005, 0.1, N)
     lambdas = np.linspace(0.001, 0.1, N)
 
 
@@ -73,7 +55,7 @@ def main():
             )
 
             prediction_log_reg = logistic.predict(data.X_test) < 0.5
-            print(f'prediction_log_reg = {prediction_log_reg}')
+            #print(f'prediction_log_reg = {prediction_log_reg}')
 
             true_output = data.z_test < 0.5
             #print(f'true_output = {true_output}')
@@ -116,6 +98,8 @@ def main():
     print(f'dict_npv = {dict_npv}')
     print(f'dict_sensitivity = {dict_sensitivity}')
     print(f'dict_specificity = {dict_specificity}')
+    print(f'dict_F1_score = {dict_F1_score}')
+
 
 
 
@@ -140,7 +124,6 @@ def main():
     print(f'Sensitivity = {dict_sensitivity[(optimal_learning_rate_accuracy, optimal_lambda_accuracy)]}')
     print(f'Specificity = {dict_specificity[(optimal_learning_rate_accuracy, optimal_lambda_accuracy)]}')
     print(f'F1 score = {dict_F1_score[(optimal_learning_rate_accuracy, optimal_lambda_accuracy)]}')
-
 
     print('--------------------------------------------')
 
@@ -173,6 +156,9 @@ def main():
     print(f'accuracy score using own code = {accuracy_score_own}')
 
     print('--------------------------------------------')
+
+
+
 
 
 
@@ -285,9 +271,11 @@ def main():
     print(f'Sensitivity = {dict_sensitivity[(optimal_learning_rate_specificity, optimal_lambda_specificity)]}')
     print(f'F1 score = {dict_F1_score[(optimal_learning_rate_specificity, optimal_lambda_specificity)]}')
 
-
-
     print('--------------------------------------------')
+
+
+
+
 
 
     ''' ------------------------ MAXIMAL F1_score ---------------------------- '''
@@ -301,18 +289,47 @@ def main():
     optimal_learning_rate_F1_score = key_max_dict_F1_score[0]
     optimal_lambda_F1_score = key_max_dict_F1_score[1]
     print('Got for:')
-    print(f'learning rate = {optimal_learning_rate_accuracy}')
-    print(f'lambda = {optimal_lambda_accuracy}')
+    print(f'learning rate = {optimal_learning_rate_F1_score}')
+    print(f'lambda = {optimal_lambda_F1_score}')
 
     print('For this learning rate and lambda we got: ')
     print(f'PPV = {dict_ppv[(optimal_learning_rate_F1_score, optimal_lambda_F1_score)]}')
     print(f'NPV = {dict_npv[(optimal_learning_rate_F1_score, optimal_lambda_F1_score)]}')
     print(f'Sensitivity = {dict_sensitivity[(optimal_learning_rate_F1_score, optimal_lambda_F1_score)]}')
     print(f'Specificity = {dict_specificity[(optimal_learning_rate_F1_score, optimal_lambda_F1_score)]}')
-    print(f'F1 score = {dict_F1_score[(optimal_learning_rate_F1_score, optimal_lambda_F1_score)]}')
 
     print('--------------------------------------------')
 
+
+
+    ''' sklearn for comparison '''
+    sci_log_reg = SklearnLogisticRegression(solver="lbfgs")
+    sci_log_reg.fit(data.X_train, data.z_train)
+
+    prediction_sklearn_logreg_test = logistic.predict(data.X_test) < 0.5
+    true_output_sklearn_test = data.z_test < 0.5
+    F1_score_sklearn = f1_score(true_output_sklearn_test, prediction_sklearn_logreg_test)
+
+    print(f'F1 score using sklearn = {F1_score_sklearn}')
+
+    z_test_pred = sci_log_reg.predict(data.X_test)
+
+    print('--------------------------------------------')
+
+
+    ''' plotting heatmap for F1 score using own code'''
+
+    ser = pd.Series(list(dict_accuracy.values()),
+                      index=pd.MultiIndex.from_tuples(dict_F1_score.keys()))
+    df = ser.unstack().fillna(0)
+    print (df.shape)
+    print(df)
+
+    sns.heatmap(df, annot = True)
+    plt.xlabel('lambda')
+    plt.ylabel('learning rate')
+    plt.title('F1 score')
+    plt.show()
 
 
     ''' Making a confusion matrix for the  learning rates and lambdas that give optimal F1 score'''
@@ -335,6 +352,7 @@ def main():
     total_nbr_obs = len(true_output)
 
 
+
     print(confusion_matrix(true_output, prediction_log_reg))
     conf_mat = confusion_matrix(true_output, prediction_log_reg)
 
@@ -344,6 +362,8 @@ def main():
     print(conf_mat_df)
 
 
+    print('--------------------------------------------')
+    print('--------------------------------------------')
 
 
 
