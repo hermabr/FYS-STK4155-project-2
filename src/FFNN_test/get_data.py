@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.model_selection import train_test_split as splitter
 from sklearn.datasets import load_breast_cancer
+from StandardScaler import *
 
 def to_categorical_numpy(integer_vector):
     n_inputs = len(integer_vector)
@@ -33,7 +34,8 @@ def bc_get_data():
     X = np.hstack((X, temp))       
     temp = np.reshape(x[:, 8],(len(x[:, 8]), 1))
     
-    X = np.hstack((X, temp))       
+    X = np.hstack((X, temp))      
+    
 
     X_train, X_test, y_train, y_test = splitter(X, y, test_size=0.2)   #Split datasets into training and testing 
     
@@ -42,11 +44,19 @@ def bc_get_data():
     
     y_train = y_train.reshape(-1,1)
     y_test = y_test.reshape(-1,1)
-
+    
     #y_train = to_categorical_numpy(y_train)     #Convert labels to categorical when using categorical cross entropy
     #y_test = to_categorical_numpy(y_test)
 
-    return X_train, X_test, y_train, y_test
+    scaler = StandardScaler()
+    scaler.fit(X_train)
+    X_train_scaled = scaler.transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+
+
+    return X_train_scaled, X_test_scaled, y_train, y_test
+    #return X_train, X_test, y_train, y_test
 
 
 def FrankeFunction(x,y):
@@ -68,4 +78,10 @@ def franke_get_data(N=100):
     z_train = z_train.reshape(-1,1)
     z_test = z_test.reshape(-1,1)
     
-    return X_train, X_test, z_train, z_test 
+    scaler = StandardScaler()
+    scaler.fit(X_train)
+    X_train_scaled = scaler.transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+    
+    return X_train_scaled, X_test_scaled, z_train, z_test 
+    #return X_train, X_test, z_train, z_test 

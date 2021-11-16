@@ -52,8 +52,10 @@ class NeuralNetwork:
 
     # activation functions https://ml-cheatsheet.readthedocs.io/en/latest/activation_functions.html#leakyrelu
     def sigmoid(self, x):
-        #return np.exp(x) / (np.exp(x) + 1)
-        return 1 / (1 + np.exp(-x))
+        if x.any() >= 0:
+            return 1 / (1 + np.exp(-x))
+        else:
+            return np.exp(x) / (1 + np.exp(x))
     
     def sigmoid_derv(self, x):
         return x * (1 - x)
