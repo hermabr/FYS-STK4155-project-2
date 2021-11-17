@@ -33,11 +33,13 @@ def main():
     dict_specificity = {}
     dict_F1_score = {}
 
-    # learning_rates = np.linspace(0.001, 10, N) #TODO: as the code is now we need this range, but isn't it a bit too big? Something wrong? Ask professor!
-    # lambdas = np.linspace(0.001, 2, N)
+    #learning_rates = np.linspace(0.001, 10, N) #TODO: as the code is now we need this range, but isn't it a bit too big? Something wrong? Ask professor!
+    #lambdas = np.linspace(0.001, 2, N)
 
-    learning_rates = np.linspace(0.005, 0.1, N)
-    lambdas = np.linspace(0.001, 0.1, N)
+    learning_rates = np.logspace(-4, 4, 9)
+    lambdas = np.logspace(-4, 4, 9)
+    # learning_rates = np.linspace(0.005, 0.1, N)
+    # lambdas = np.linspace(0.001, 0.1, N)
 
 
     np.random.seed(42)

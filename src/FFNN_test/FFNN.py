@@ -12,7 +12,7 @@ def MSE(y_data, y_model):
         n = np.size(y_model)
         return np.sum((y_data.ravel() - y_model.ravel())**2) / n
 
-class NeuralNetwork: 
+class NeuralNetwork:
     def __init__(
         self,
         X_data,
@@ -47,7 +47,7 @@ class NeuralNetwork:
         self.lambda_ = lambda_
 
         self.create_biases_and_weights()
-        
+
         self.MSE_list = []
 
     # activation functions https://ml-cheatsheet.readthedocs.io/en/latest/activation_functions.html#leakyrelu
@@ -56,30 +56,30 @@ class NeuralNetwork:
             return 1 / (1 + np.exp(-x))
         else:
             return np.exp(x) / (1 + np.exp(x))
-    
+
     def sigmoid_derv(self, x):
         return x * (1 - x)
 
     def ReLu(self, x):
         return max(0, x)
-    
+
     def ReLu_derv(self, x):
         pass #TODO
 
     def LeakyRelu(self, x, alpha=0.01):
         return max(alpha * x, x)
-    
+
     def LeakyRelu_derv(self, x, alpha=0.01):
         pass #TODO
 
     def create_biases_and_weights(self):
         self.hidden_weights = []
         self.hidden_bias = []
-        
+
         for n in range(self.n_hidden_layers):
             hidden_weights_temp = np.random.randn(self.n_hidden_neurons, self.n_hidden_neurons)
             self.hidden_weights.append(hidden_weights_temp)
-            
+
             hidden_bias_temp = np.zeros(self.n_hidden_neurons) + 0.01
             self.hidden_bias.append(hidden_bias_temp)
 
@@ -90,10 +90,10 @@ class NeuralNetwork:
 
     def feed_forward(self):
         # feed-forward for training
-        
+
         self.a_h_list = []
         self.a_h = 0
-        
+
         #print(self.X_data.shape, self.hidden_weights[0].shape)
         self.z_h = self.X_data @ self.hidden_weights[0] + self.hidden_bias[0]
         #if np.max(np.abs(self.hidden_weights[0])) > 1e2:
@@ -111,11 +111,11 @@ class NeuralNetwork:
             self.a_h = self.LeakyRelu(self.z_h)  # TODO add alpha params to init
         else:  # == 'none' aka linear
             self.a_h = self.z_h
-        
+
         #print("Prinitng shapes: ahs, xdata, hiddenw[0], hiddenbias[0]")
         #print(self.a_h.shape, self.X_data.shape, self.hidden_weights[0].shape, self.hidden_bias[0].shape)
         self.a_h_list.append(self.a_h)
-                
+
         ## add loop
         for n in range(1, self.n_hidden_layers):
             self.z_h = self.a_h @ self.hidden_weights[n] + self.hidden_bias[n]
@@ -132,7 +132,7 @@ class NeuralNetwork:
                 self.a_h = self.LeakyRelu(self.z_h)  # TODO add alpha params to init
             else:  # == 'none'
                 self.a_h = self.z_h
-                
+
             self.a_h_list.append(self.a_h)
 
         self.z_o = self.a_h @ self.output_weights + self.output_bias
@@ -151,7 +151,7 @@ class NeuralNetwork:
         z_h = X @ self.hidden_weights[0] + self.hidden_bias[0]
         if np.max(np.abs(z_h)) > 1e3:
             print(0, np.max(np.abs(z_h)) )
-            
+
         if self.activation == "sigmoid":
             a_h = self.sigmoid(z_h)
         elif self.activation == "softmax":
@@ -162,12 +162,12 @@ class NeuralNetwork:
             a_h = self.sigmoid(z_h)
         else:  # == 'none'
             a_h = z_h
-                        
+
         for n in range(1, self.n_hidden_layers):
             z_h = a_h @ self.hidden_weights[n] + self.hidden_bias[n]
             if np.max(np.abs(z_h)) > 1e3:
                 print(n, np.max(np.abs(z_h)) )
-            
+
             if self.activation == "sigmoid":
                 a_h = self.sigmoid(z_h)
             elif self.activation == "softmax":
@@ -186,25 +186,25 @@ class NeuralNetwork:
             probabilities = exp_term / np.sum(exp_term, axis=1, keepdims=True)
         else:
             probabilities = z_o
-            
+
         return probabilities
 
     def backpropagation(self):
         error_output = self.probabilities - self.Y_data[0]
-        error_hidden = error_output @ self.output_weights.T * self.a_h_list[-1] * (1 - self.a_h)      
-        
+        error_hidden = error_output @ self.output_weights.T * self.a_h_list[-1] * (1 - self.a_h)
+
         self.hidden_weights_gradient = [np.zeros(i.shape) for i in self.hidden_weights]
         #[print(i.shape) for i in self.hidden_weights]
         #[print(i.shape) for i in self.hidden_weights_gradient]
         #self.hidden_weights_gradient = np.zeros_like(self.hidden_weights)
         #self.hidden_weights_gradient[0] = np.zeros_like((self.hidden_weights[0]))
         self.hidden_bias_gradient = np.zeros_like(self.hidden_bias)
-        
+
         self.output_weights_gradient = self.a_h.T @ error_output
         self.output_bias_gradient = np.sum(error_output, axis=0)
-        
+
         for n in np.flip(range(self.n_hidden_layers)):
-            
+
             #print(error_hidden.shape, self.X_data.shape)
 
             if n == 0:
@@ -213,7 +213,7 @@ class NeuralNetwork:
             else:
                 self.hidden_weights_gradient[n] = self.a_h_list[n-1].T @ error_hidden
 
-            
+
             self.hidden_bias_gradient[n] = np.sum(error_hidden, axis=0)
             from IPython import embed
             #embed()
@@ -223,13 +223,13 @@ class NeuralNetwork:
 
         if self.lambda_ > 0.0:
             self.output_weights_gradient += self.lambda_ * self.output_weights
-            
+
             for n in range(self.n_hidden_layers):
                 self.hidden_weights_gradient[n] += self.lambda_ * self.hidden_weights[n]
 
         self.output_weights -= self.eta * self.output_weights_gradient
         self.output_bias -= self.eta * self.output_bias_gradient
-        
+
         for n in range(self.n_hidden_layers):
             #print(n, self.hidden_weights[n].shape, self.hidden_weights_gradient[n].shape)
             self.hidden_weights[n] -= self.eta * self.hidden_weights_gradient[n]
@@ -237,7 +237,7 @@ class NeuralNetwork:
 
     def predict(self, X):
         probabilities = self.feed_forward_out(X)
-        
+
         if self.classification:
             return np.argmax(probabilities, axis=1)
         else:
@@ -250,12 +250,12 @@ class NeuralNetwork:
     def train(self):
         #print(f'MSE = {MSE(self.Y_data_full, self.feed_forward_out(self.X_data_full))}\n')
         data_indices = np.arange(self.n_inputs)
-        
+
         print("Data ", self.X_data_full.shape, self.Y_data_full.shape)
 
         for i in range(self.epochs):
             for j in range(self.iterations):
-                
+
                 # pick datapoints with replacement
                 chosen_datapoints = np.random.choice(
                     data_indices, size=self.batch_size, replace=False
@@ -264,22 +264,22 @@ class NeuralNetwork:
                 # minibatch training data
                 self.X_data = self.X_data_full[chosen_datapoints]
                 self.Y_data = self.Y_data_full[chosen_datapoints]
-                
+
                 #print("sfds", self.X_data.shape, self.X_data_full.shape, len(chosen_datapoints), self.n_inputs, self.n_features)
 
                 self.feed_forward()
                 self.backpropagation()
-                
+
                 #self.MSE_list.append(MSE(self.Y_data_full, self.probabilities))
             #print(np.mean(self.hidden_bias), np.mean(self.output_bias))
             #print(np.mean(self.hidden_weights), np.mean(self.output_weights))
             #print(self.predict_probabilities(X))
             #print(f'MSE = {MSE(self.Y_data_full[:], self.feed_forward_out(self.X_data_full[:]))}\n')
-                
 
-#%% 
+
+#%%
 # TODO test for the Franke data set
-from get_data import *
+# from generate_data import *
 
 """ REGRESSION TESTING """
 
@@ -316,15 +316,15 @@ print("Accuracy:", nn_acc)
 
 """
 Train_accuracy=np.zeros((len(n_neuron),len(eta)))      #Define matrices to store accuracy scores as a function
-Test_accuracy=np.zeros((len(n_neuron),len(eta)))       #of learning rate and number of hidden neurons for 
+Test_accuracy=np.zeros((len(n_neuron),len(eta)))       #of learning rate and number of hidden neurons for
 
-for i in range(len(n_neuron)):     #run loops over hidden neurons and learning rates to calculate 
-    for j in range(len(eta)):      #accuracy scores 
+for i in range(len(n_neuron)):     #run loops over hidden neurons and learning rates to calculate
+    for j in range(len(eta)):      #accuracy scores
         DNN_model=NN_model(X_train.shape[1],n_layers,n_neuron[i],eta[j],lamda)
         DNN_model.fit(X_train,y_train,epochs=epochs,batch_size=batch_size,verbose=1)
         Train_accuracy[i,j]=DNN_model.evaluate(X_train,y_train)[1]
         Test_accuracy[i,j]=DNN_model.evaluate(X_test,y_test)[1]
-               
+
 
 def plot_data(x,y,data,title=None):
 
@@ -335,7 +335,7 @@ def plot_data(x,y,data,title=None):
     fig = plt.figure()
     ax = fig.add_subplot(111)
     cax = ax.matshow(data, interpolation='nearest', vmin=0, vmax=1)
-    
+
     cbar=fig.colorbar(cax)
     cbar.ax.set_ylabel('accuracy (%)',rotation=90,fontsize=fontsize)
     cbar.set_ticks([0,.2,.4,0.6,0.8,1.0])
@@ -344,7 +344,7 @@ def plot_data(x,y,data,title=None):
     # put text on matrix elements
     for i, x_val in enumerate(np.arange(len(x))):
         for j, y_val in enumerate(np.arange(len(y))):
-            c = "${0:.1f}\\%$".format( 100*data[j,i])  
+            c = "${0:.1f}\\%$".format( 100*data[j,i])
             ax.text(x_val, y_val, c, va='center', ha='center')
 
     # convert axis vaues to to string labels
@@ -363,7 +363,7 @@ def plot_data(x,y,data,title=None):
     plt.tight_layout()
 
     plt.show()
-    
+
 plot_data(eta,n_neuron,Train_accuracy, 'training')
 plot_data(eta,n_neuron,Test_accuracy, 'testing')
 """

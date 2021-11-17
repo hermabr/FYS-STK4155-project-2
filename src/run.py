@@ -1,7 +1,7 @@
 import argparse
 import numpy as np
 
-from analysis import sgd, FFNN, logistic
+from analysis import sgd, FFNN_own_code_analysis, FNN_sklearn_analysis, logistic
 
 
 if __name__ == "__main__":

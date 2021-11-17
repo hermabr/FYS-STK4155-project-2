@@ -31,13 +31,9 @@ def main():
     data = BreastCancerData(test_size=0.2, scale_data=True)
 
     ''' ------------------- OWN CODE FOR FFNN IMPLEMENTATION ----------------------'''
-    #TODO: Implement own code
 
 
-    ''' ------------------- SCIKITLEARN IMPLEMENTATION ----------------------'''
-    from sklearn.neural_network import MLPClassifier
-
-    N = 6 #TODO: increase N in final runthroug
+    N = 3 #TODO: increase N in final runthroug
 
     learning_rates = np.linspace(0.005, 0.1, N)
     lambdas = np.linspace(0.001, 0.1, N)
@@ -66,26 +62,37 @@ def main():
              for nbr_lay in number_of_hidden_layers:
                 for nbr_nodes in nbr_of_hidden_nodes:
                     hidden_layers_float = np.zeros(nbr_lay)
-                    # print(nbr_nodes)
-                    # print(hidden_layer_size)
-                    # print(nbr_lay)
+
                     ''' making array where the number of indexes indicate number of hidden layers and each value indicate number of nodes in each hidden layer'''
                     for i in range(nbr_lay):
                         hidden_layers_float[i] = nbr_nodes
                     hidden_layers_int = hidden_layers_float.astype(int)
 
+                    ffnn_sci = NeuralNetwork(data.X_train,
+                                            datas.z_train,
+                                            activation = "sigmoid",
+                                            n_hidden_neurons = nbr_nodes,
+                                            n_outputs=2,
+                                            n_hidden_layers=nbr_lay,
+                                            epochs=1000,
+                                            batch_size=BATCH_SIZE,
+                                            eta=learning_rate,
+                                            lambda_=lmb,
+                                            classification=CLASSIFICATION
+                                            )
 
-                    ffnn_sci = MLPClassifier(
-                                hidden_layer_sizes= hidden_layers_int,
-                                solver = 'sgd',
-                                alpha = lmb,
-                                learning_rate = 'adaptive',
-                                learning_rate_init = learning_rate,
-                                max_iter=500
-                                )
+                    # SKLEARN:
+                    # ffnn_sci = MLPClassifier(
+                    #             hidden_layer_sizes= hidden_layers_int,
+                    #             solver = 'sgd',
+                    #             alpha = lmb,
+                    #             learning_rate = 'adaptive',
+                    #             learning_rate_init = learning_rate,
+                    #             max_iter=1000
+                    #             )
 
 
-                    ffnn_sci.fit(data.X_train, data.z_train)
+                    ffnn_sci.train(data.X_train, data.z_train)
 
                     z_test_predict = ffnn_sci.predict(data.X_test)
 
@@ -115,6 +122,7 @@ def main():
                     dict_specificity[(learning_rate, lmb, nbr_lay, nbr_nodes)] = tn /(tn+fp) * 100
 
                     F1_score = 2 * ((ppv*npv)/(ppv+npv))
+
                     dict_F1_score[(learning_rate, lmb, nbr_lay, nbr_nodes)] = F1_score
 
                     #TODO: fix if test that calculates ppv, npv and F1 score when denominator = 0!
@@ -349,17 +357,23 @@ def main():
 
 
     ''' Making a confusion matrix for the learning rate, lambda, number of hidden layers and number of nodes that give optimal F1 score'''
-    ffnn_sci = MLPClassifier(
-                hidden_layer_sizes= optimal_nbr_lay_F1_score,
-                solver = 'sgd',
-                alpha = optimal_lambda_F1_score,
-                learning_rate = 'adaptive',
-                learning_rate_init = optimal_learning_rate_F1_score,
-                max_iter=500
-                )
 
 
-    ffnn_sci.fit(data.X_train, data.z_train)
+    ffnn_sci = NeuralNetwork(data.X_train,
+                            datas.z_train,
+                            activation = "sigmoid",
+                            n_hidden_neurons = nbr_nodes,
+                            n_outputs=2,
+                            n_hidden_layers=nbr_lay,
+                            epochs=1000,
+                            batch_size=BATCH_SIZE,
+                            eta=learning_rate,
+                            lambda_=lmb,
+                            classification=CLASSIFICATION
+                            )
+
+
+    ffnn_sci.train(data.X_train, data.z_train)
 
     z_test_FFNN_predict = ffnn_sci.predict(data.X_test) < 0.5
 
