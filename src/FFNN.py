@@ -278,41 +278,41 @@ class NeuralNetwork:
 
 
 #%%
-# TODO test for the Franke data set
-from generate_data import *
+# # TODO test for the Franke data set
+# from generate_data import *
+#
+# """ REGRESSION TESTING """
+#
+# from neural_network_regression import *
+#
+# X_train, X_test, z_train, z_test = FrankeData()
+# neuralnetwork = NeuralNetwork(X_test, z_test, activation="sigmoid") #TODO spit data sets
+#
+# neuralnetwork.train()
+#
+# z_predict = neuralnetwork.predict(X_test)
+#
+# print(f'MSE = {MSE(z_test, z_predict)}\n')
+#
+#
+# """ CLASSIFICATION TESTING """
 
-""" REGRESSION TESTING """
-
-from neural_network_regression import *
-
-X_train, X_test, z_train, z_test = franke_get_data()
-neuralnetwork = NeuralNetwork(X_test, z_test, activation="sigmoid") #TODO spit data sets
-
-neuralnetwork.train()
-
-z_predict = neuralnetwork.predict(X_test)
-
-print(f'MSE = {MSE(z_test, z_predict)}\n')
-
-
-""" CLASSIFICATION TESTING """
-
-from neural_network_classification import *
-
-def accuracy_score(Y_test, Y_pred):
-    return np.sum([Y_test[i] == Y_pred[i] for i in range(len(Y_test))]) / len(Y_test)
-
-#Load breast cancer dataset
-X_train, X_test, y_train, y_test = bc_get_data()
-
-nn = NeuralNetwork(X_train, y_train, activation="sigmoid")
-nn.train()
-y_pred = nn.predict(X_train)
-nn_acc = accuracy_score(y_train, y_pred)
-print("Accuracy:", nn_acc)
-y_pred = nn.predict(X_test)
-nn_acc = accuracy_score(y_test, y_pred)
-print("Accuracy:", nn_acc)
+# from neural_network_classification import *
+#
+# def accuracy_score(Y_test, Y_pred):
+#     return np.sum([Y_test[i] == Y_pred[i] for i in range(len(Y_test))]) / len(Y_test)
+#
+# #Load breast cancer dataset
+# X_train, X_test, y_train, y_test = bc_get_data()
+#
+# nn = NeuralNetwork(X_train, y_train, activation="sigmoid")
+# nn.train()
+# y_pred = nn.predict(X_train)
+# nn_acc = accuracy_score(y_train, y_pred)
+# print("Accuracy:", nn_acc)
+# y_pred = nn.predict(X_test)
+# nn_acc = accuracy_score(y_test, y_pred)
+# print("Accuracy:", nn_acc)
 
 """
 Train_accuracy=np.zeros((len(n_neuron),len(eta)))      #Define matrices to store accuracy scores as a function
