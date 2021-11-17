@@ -9,17 +9,6 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-def accuracy_score_numpy(Y_test, Y_pred):
-    return np.sum(Y_test == Y_pred) / len(Y_test)
-
-
-def analyze_franke():
-    pass
-
-
-def analyze_cancer_data():
-    pass
-
 
 '''Accuracy score function for evaluating performance'''
 def accuracy_score_numpy(Y_test, Y_pred):
@@ -27,12 +16,7 @@ def accuracy_score_numpy(Y_test, Y_pred):
 
 def main():
 
-
     data = BreastCancerData(test_size=0.2, scale_data=True)
-
-    ''' ------------------- OWN CODE FOR FFNN IMPLEMENTATION ----------------------'''
-    #TODO: Implement own code
-
 
     ''' ------------------- SCIKITLEARN IMPLEMENTATION ----------------------'''
     from sklearn.neural_network import MLPClassifier
@@ -41,6 +25,7 @@ def main():
 
     learning_rates = np.linspace(0.005, 0.1, N)
     lambdas = np.linspace(0.001, 0.1, N)
+
 
     # learning_rates = np.linspace(0.001, 10, N) #TODO: as the code is now we need this range, but isn't it a bit too big? Something wrong? Ask professor!
     # lambdas = np.linspace(0.001, 2, N)
@@ -85,38 +70,39 @@ def main():
 
                     ffnn_sci.fit(data.X_train, data.z_train)
 
-                    z_test_predict = ffnn_sci.predict(data.X_test)
-
-                    accuracy = accuracy_score_numpy(data.z_test, z_test_predict)
-
-                    prediction_log_reg = ffnn_sci.predict(data.X_test) < 0.5
+                    #z_test_predict = ffnn_sci.predict(data.X_test)
+                    prediction_FFNN = ffnn_sci.predict(data.X_test) < 0.5
                     true_output = data.z_test < 0.5
+                    accuracy = accuracy_score_numpy(true_output, prediction_FFNN)
+
+
 
                     dict_accuracy[(learning_rate, lmb, nbr_lay, nbr_nodes)] = accuracy
 
-                    tn_fp, fn_tp = confusion_matrix(true_output, prediction_log_reg)
+                    tn_fp, fn_tp = confusion_matrix(true_output, prediction_FFNN)
                     tn, fp = tn_fp
                     fn, tp = fn_tp
                     total_nbr_obs = len(true_output)
-                    dict_tn[(learning_rate, lmb)]= tn/total_nbr_obs * 100
-                    dict_fp[(learning_rate, lmb)] = fp/total_nbr_obs * 100
-                    dict_fn[(learning_rate, lmb)]= fn/total_nbr_obs * 100
-                    dict_tp[(learning_rate, lmb)] = tp/total_nbr_obs * 100
+                    dict_tn[(learning_rate, lmb)]= tn/total_nbr_obs
+                    dict_fp[(learning_rate, lmb)] = fp/total_nbr_obs
+                    dict_fn[(learning_rate, lmb)]= fn/total_nbr_obs
+                    dict_tp[(learning_rate, lmb)] = tp/total_nbr_obs
 
-                    ppv = tp / (tp+fp) * 100
+                    ppv = tp / (tp+fp)
                     dict_ppv[(learning_rate, lmb, nbr_lay, nbr_nodes)]= ppv
 
-                    npv = tn / (tn+fn) * 100
+                    npv = tn / (tn+fn)
                     dict_npv[(learning_rate, lmb, nbr_lay, nbr_nodes)] = npv
 
-                    dict_sensitivity[(learning_rate, lmb, nbr_lay, nbr_nodes)] = tp / (tp+fn) * 100
-                    dict_specificity[(learning_rate, lmb, nbr_lay, nbr_nodes)] = tn /(tn+fp) * 100
+                    dict_sensitivity[(learning_rate, lmb, nbr_lay, nbr_nodes)] = tp / (tp+fn)
 
-                    F1_score = 2 * ((ppv*npv)/(ppv+npv))
+
+                    dict_specificity[(learning_rate, lmb, nbr_lay, nbr_nodes)] = tn /(tn+fp)
+
+                    F1_score = tp / (tp + 0.5 * (fp + fn))
 
                     dict_F1_score[(learning_rate, lmb, nbr_lay, nbr_nodes)] = F1_score
 
-                    #TODO: fix if test that calculates ppv, npv and F1 score when denominator = 0!
 
     print(f'dict_accuracy = {dict_accuracy}')
     print(f'dict_tn = {dict_tn}')
@@ -217,10 +203,10 @@ def main():
 
     ''' ------------------------ MAXIMAL NPV --------------------------------- '''
     max(dict_npv)
-    key_max_npv = max(dict_ppv.keys(), key=(lambda k: dict_npv[k]))
+    key_max_npv = max(dict_npv.keys(), key=(lambda k: dict_npv[k]))
 
     print('--------------------------------------------')
-    print('NEGATIVE PREDICTIVE VALUE (RECALL)')
+    print('NEGATIVE PREDICTIVE VALUE ')
     print(f'Maximal NPV = {dict_npv[key_max_npv]}')
 
     optimal_learning_rate_npv = key_max_npv[0]
@@ -256,7 +242,7 @@ def main():
 
 
     print('--------------------------------------------')
-    print('SENSITIVITY')
+    print('SENSITIVITY (recall)')
     print(f'Maximal Sensitivity = {dict_sensitivity[key_max_sensitivity]}')
 
     optimal_learning_rate_sensitivity = key_max_sensitivity[0]
@@ -325,7 +311,7 @@ def main():
     print('--------------------------------------------')
     print('--------------------------------------------')
     print('F1 SCORE')
-    print(f'Maximal F1 score = {dict_accuracy[key_max_accuracy]}')
+    print(f'Maximal F1 score = {dict_F1_score[key_max_dict_F1_score]}')
 
     optimal_learning_rate_F1_score = key_max_dict_F1_score[0]
     optimal_lambda_F1_score = key_max_dict_F1_score[1]
@@ -342,6 +328,7 @@ def main():
     print(f'--> NPV = {dict_npv[key_max_dict_F1_score]}')
     print(f'--> Sensitivity = {dict_sensitivity[key_max_dict_F1_score]}')
     print(f'--> Specificity = {dict_specificity[key_max_dict_F1_score]}')
+    print(f'--> Accuracy = {dict_accuracy[key_max_dict_F1_score]}')
 
     print('--------------------------------------------')
 
@@ -356,7 +343,7 @@ def main():
     optimal_n_of_layers_with_n_of_nodes_touple_int = optimal_n_of_layers_with_n_of_nodes_touple_float.astype(int)
 
 
-    ffnn_sci = MLPClassifier(
+    ffnn_sci_optimal = MLPClassifier(
                 hidden_layer_sizes= optimal_n_of_layers_with_n_of_nodes_touple_int,
                 solver = 'sgd',
                 alpha = optimal_lambda_F1_score,
@@ -366,27 +353,24 @@ def main():
                 )
 
 
-    ffnn_sci.fit(data.X_train, data.z_train)
 
-    z_test_FFNN_predict = ffnn_sci.predict(data.X_test) < 0.5
+    ffnn_sci_optimal.fit(data.X_train, data.z_train)
+
+    z_test_FFNN_predict_optimal = ffnn_sci_optimal.predict(data.X_test) < 0.5
 
     true_output = data.z_test < 0.5
 
-    tn_fp, fn_tp = confusion_matrix(true_output, prediction_log_reg)
 
-    tn, fp = tn_fp
-    fn, tp = fn_tp
-    total_nbr_obs = len(true_output)
 
-    print(confusion_matrix(true_output, prediction_log_reg))
-    conf_mat = confusion_matrix(true_output, prediction_log_reg)
+    print(confusion_matrix(true_output, z_test_FFNN_predict_optimal))
+    conf_mat = confusion_matrix(true_output, z_test_FFNN_predict_optimal)
 
     columns = ['Predicted Benign', 'Predicted Malignant']
     rows = ['True Benign', 'True Malignant']
     conf_mat_df = pd.DataFrame(data = conf_mat, index = rows, columns = columns)
     print(conf_mat_df)
 
-    # # #TODO: fix confusion matrix to include percentages
+
 
     print('--------------------------------------------')
     print('--------------------------------------------')
