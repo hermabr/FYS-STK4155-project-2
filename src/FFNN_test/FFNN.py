@@ -286,7 +286,7 @@ class NeuralNetwork:
 from neural_network_regression import *
 
 X_train, X_test, z_train, z_test = franke_get_data()
-neuralnetwork = NeuralNetwork(X_test, z_test, activation="sigmoid") #TODO spit data sets
+neuralnetwork = NeuralNetwork(X_train, z_train, activation="sigmoid") #TODO spit data sets
 
 neuralnetwork.train()
 

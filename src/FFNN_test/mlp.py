@@ -18,8 +18,8 @@ class mlp:
         """ Constructor """
         # Set up network size
         self.nin = np.shape(inputs)[1]
-        #self.nout = np.shape(targets)[1]
-        self.nout = np.shape(inputs)[1]
+        self.nout = np.shape(targets)[1]
+        #self.nout = np.shape(inputs)[1]
         self.ndata = np.shape(inputs)[0]
         self.nhidden = nhidden
 
@@ -28,8 +28,9 @@ class mlp:
         self.outtype = outtype
     
         # Initialise network
-        self.weights1 = (np.random.rand(self.nin+1,self.nhidden)-0.5)*2/np.sqrt(self.nin)
-        self.weights2 = (np.random.rand(self.nhidden+1,self.nout)-0.5)*2/np.sqrt(self.nhidden)
+        self.weights1 = (np.random.rand(self.nin + 1, self.nhidden) - 0.5) * 2 / np.sqrt(self.nin)
+        self.weights2 = (np.random.rand(self.nhidden + 1, self.nhidden) - 0.5) * 2 / np.sqrt(self.nhidden)
+        self.weights3 = (np.random.rand(self.nhidden + 1, self.nout) - 0.5) * 2 / np.sqrt(self.nhidden)
 
         ''' ------------------------------------------------------------------------------------'''
         #self.weights1 = np.insert(self.weights1, 0, -np.ones(len(self.weights1[0])), 0) 
@@ -37,6 +38,7 @@ class mlp:
 
         print(f'weights1 = {self.weights1}')
         print(f'weights2 = {self.weights2}')
+        print(f'weights2 = {self.weights3}')
         ''' ------------------------------------------------------------------------------------'''
 
     def earlystopping(self,inputs,targets,valid,validtargets,eta,niterations=100):
@@ -55,7 +57,8 @@ class mlp:
             old_val_error2 = old_val_error1
             old_val_error1 = new_val_error
             validout = self.mlpfwd(valid)
-            new_val_error = 0.5*np.sum((validtargets-validout)**2)
+            #new_val_error = 0.5*np.sum((validtargets-validout)**2)
+            new_val_error = MSE(validtargets, validout)
             
         print ("Stopped", new_val_error,old_val_error1, old_val_error2)
         return new_val_error
@@ -68,14 +71,18 @@ class mlp:
     
         updatew1 = np.zeros((np.shape(self.weights1)))
         updatew2 = np.zeros((np.shape(self.weights2)))
+        updatew3 = np.zeros((np.shape(self.weights3)))
             
         for n in range(niterations):
     
             self.outputs = self.mlpfwd(inputs) #(800,1)
 
-            error = 0.5*np.sum((self.outputs-targets)**2) #sum of squares
+            #error = 0.5*np.sum((self.outputs-targets)**2) #sum of squares
+            
+            error = MSE(self.outputs, targets)
+            
             if (np.mod(n,100)==0):
-                print ("Iteration: ",n, " Error: ",error)    
+                print ("Iteration: ", n, " Error: ", error)    
 
             # Different types of output neurons
             if self.outtype == 'linear':
@@ -87,17 +94,21 @@ class mlp:
             else:
             	print ("error")
             
-            print(f'{n}: {np.max(deltao)}')
+            #print(f'{n}: {np.max(deltao)}')
             
             #backprop
             
             deltah = self.hidden*self.beta*(1.0-self.hidden)*(np.dot(deltao,np.transpose(self.weights2))) #(800, 7)
+            deltah2 = self.hidden*self.beta*(1.0-self.hidden)*(np.dot(deltao,np.transpose(self.weights3)))
                       
             updatew1 = eta*(np.dot(np.transpose(inputs),deltah[:,:-1])) #+ self.momentum*updatew1 
-            updatew2 = eta*(np.dot(np.transpose(self.hidden),deltao)) #+ self.momentum*updatew2 
+            updatew2 = eta*(np.dot(np.transpose(inputs),deltah[:,:-2]))
+            #updatew2 = eta*(np.dot(np.transpose(self.hidden), deltah2[:,:-1])) #+ self.momentum*updatew2 
+            updatew3 = eta*(np.dot(np.transpose(self.hidden), deltao))
             
             self.weights1 -= updatew1
             self.weights2 -= updatew2
+            self.weights3 -= updatew3
                 
             # Randomise order of inputs (not necessary for matrix-based calculation)
             #np.random.shuffle(change)
@@ -152,25 +163,21 @@ class mlp:
 
 def MSE(y_data, y_model):
         n = np.size(y_model)
-        return np.sum((y_data.ravel() - y_model.ravel())**2) / n
+        return np.sum((y_data - y_model)**2) / n
         
 """ REGRESSION TESTING """
-#from get_data import franke_get_data
+print("\n\REGRESSION TESTING")
+from get_data import franke_get_data
 
-#X_train, X_test, z_train, z_test = franke_get_data()
+X_train, X_test, z_train, z_test = franke_get_data()
 
-#net = mlp(X_train, z_train, 3 ,outtype="linear") 
-#net.mlptrain(X_train, z_train, 0.25, 101)
-#net.confmat(X_test, z_test)
-#print(f"MSE: {MSE(y_data, y_model)}")
-#data = FrankeData(20, 5, test_size=0.2)
-#neuralnetwork = mlp(data.X_train, data.z_train[0], 5, outtype="linear")
+nn = mlp(X_train, z_train, 3 ,outtype="linear") 
+nn.mlptrain(X_train, z_train, 0.25, 101)
 
-#neuralnetwork.mlptrain()
-
-#z_predict = neuralnetwork.predict(data.X_test)
 
 """ CLASSIFICATION TESTING """
+
+print("\n\nCLASSIFICATION TESTING")
 from get_data import bc_get_data
 
 X_train, X_test, y_train, y_test = bc_get_data() 
