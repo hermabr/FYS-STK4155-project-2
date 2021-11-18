@@ -12,8 +12,8 @@ class Layer:
         self.output = self.activation(np.matmul(inputs, self.weights) + self.bias)
         return self.output
 
-    def backward(self, delta, output_transposed, learning_rate):
-        delta_weights = np.matmul(output_transposed, delta)
+    def backward(self, delta, output_transposed, learning_rate, lambda_=0):
+        delta_weights = np.matmul(output_transposed, delta) + lambda_ * self.weights
         delta_bias = delta
 
         self.weights -= delta_weights * learning_rate

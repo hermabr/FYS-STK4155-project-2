@@ -7,14 +7,6 @@ class LogisticRegression(LinearRegression):
     def __init__(self):
         pass
 
-    def cost_function(self, X, y, lambda_):
-        m = len(y)
-        h = self.sigmoid(np.dot(X, self.theta))
-        J = -(1 / m) * np.sum(y * np.log(h) + (1 - y) * np.log(1 - h))
-        if lambda_:
-            J += lambda_ / (2 * m) * np.sum(np.square(self.theta))
-        return J
-
     def cost_function_gradient(self, X, y, lambda_):
         m = len(y)
         h = self.h(X, self.theta)

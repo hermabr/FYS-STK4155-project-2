@@ -1,7 +1,7 @@
+import matplotlib.pyplot as plt
 from generate_data import BreastCancerData, FrankeData
 from tqdm import tqdm
 import numpy as np
-from sklearn.metrics import mean_squared_error
 from layers import LinearLayer, SigmoidLayer, LeakyReluLayer, ReluLayer
 
 
@@ -39,17 +39,38 @@ class FFNN:
         L = self.n_hidden_layers + 1
         delta = self.layers[L].output - y
 
+        if self.lambda_ == 0:
+            cost = self.cost(self.layers[L].output, y)
+        else:
+            cost = self.cost_with_regularization(
+                self.layers[L].output, y, lambda_=self.lambda_
+            )
+        self.costs.append(cost)
+
         for k in range(L, 0, -1):
             delta = self.layers[k].backward(
-                delta, self.layers[k - 1].output.T, learning_rate
+                delta, self.layers[k - 1].output.T, learning_rate, self.lambda_
             )
 
-    def fit(self, X, Y, epochs=1, learning_rate=0.001):
-        # TODO: epochs and iterations
+    def fit(
+        self,
+        X,
+        Y,
+        epochs=1000,
+        learning_rate=0.001,
+        lambda_=0,
+    ):
+        self.lambda_ = lambda_
+        self.costs = []
         for e in tqdm(range(epochs), total=epochs, unit="epochs"):
             for x, y in zip(X, Y):
                 self.forward_pass(x)
                 self.backward(y, learning_rate=learning_rate)
+        # do cost per epoch, not per iteration
+        self.costs = np.sum(
+            np.array(self.costs).reshape((len(X), int(len(self.costs) / len(X)))),
+            axis=1,
+        )
 
     def predict(self, X):
         Y_pred = []
@@ -60,36 +81,114 @@ class FFNN:
             return np.array(Y_pred).squeeze() > 0.5
         return np.array(Y_pred).squeeze()
 
+    def cost(self, y_hat, y):
+        m = len(y_hat)
+        if self.classification:
+            cost = -1 / m * np.nansum(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))
+        else:
+            cost = -1 / m * 0.5 * np.nansum((y - y_hat) ** 2)
+        #  logprobs = np.multiply(-np.log(y_hat), y) + np.multiply(
+        #      -np.log(1 - y_hat), 1 - y
+        #  )
+        #  cost = 1.0 / m * np.nansum(logprobs)
+        return cost
 
-if __name__ == "__main__":
-    np.random.seed(42)
+    def cost_with_regularization(self, y_hat, y, lambda_):
+        m = len(y_hat)
+        cost = self.cost(y_hat, y)
+        L2_regularization_cost = (
+            lambda_ / (2 * m) * np.nansum(np.square(self.layers[1].weights))
+        )
+        reg_cost = cost + L2_regularization_cost
+        return reg_cost
+
+    def plot_cost(self, X, Y):
+        plt.plot(self.costs)
+        plt.ylabel("cost")
+        plt.xlabel("iterations (x1,000)")
+        plt.title("Learning rate = 0.001")
+        plt.show()
+
+
+def test_breast_cancer_data(lambda_):
     data = BreastCancerData(test_size=0.2)
-    #  data = FrankeData(20, 1, test_size=0.2)
 
     net = FFNN(
         data.X_train.shape[1],
         (10, 20, 4),
         final_layer=SigmoidLayer,
         classification=True,
+        n_categories=1,
     )
 
     net.fit(
         data.X_train,
         data.z_train,
-        #  epochs=5000,
+        epochs=1000,
+        learning_rate=0.001,
+        lambda_=lambda_,
+    )
+
+    z_tilde = net.predict(data.X_train)
+    correct = z_tilde == data.z_train
+    accuracy = np.sum(correct) / len(correct)
+    print("Accuracy train:", accuracy)
+
+    z_tilde = net.predict(data.X_test)
+    correct = z_tilde == data.z_test
+    accuracy = np.sum(correct) / len(correct)
+    print("Accuracy test:", accuracy)
+
+    print("Weight sum:", np.sum([np.sum(layer.weights) for layer in net.layers]))
+
+    import sklearn
+
+    f1_score = sklearn.metrics.f1_score(z_tilde, data.z_test)
+    print("F1 score:", f1_score)
+
+    net.plot_cost(data.X_train, data.z_train)
+
+
+def test_franke_data():
+    data = FrankeData(20, 1, test_size=0.2)
+
+    net = FFNN(
+        data.X_train.shape[1],
+        (10, 20, 4),
+        final_layer=SigmoidLayer,
+        classification=True,
+        n_categories=1,
+    )
+
+    net.fit(
+        data.X_train,
+        data.z_train,
         epochs=1000,
         learning_rate=0.001,
     )
 
-    z_tilde = net.predict(data.X_test)
+    z_tilde = net.predict(data.X_train)
+    mse = np.mean((z_tilde - data.z_train) ** 2)
+    print("MSE:", mse)
 
-    #  mse = np.mean((data.z_test - z_tilde) ** 2)
-    #  print("BreastCancerData")
-    #  print(f"MSE: {mse}")
+    #  z_tilde = net.predict(data.X_test)
+    #  correct = z_tilde == data.z_test
+    #  accuracy = np.sum(correct) / len(correct)
+    #  print("Accuracy test:", accuracy)
+    #
+    #  print("Weight sum:", np.sum([np.sum(layer.weights) for layer in net.layers]))
+    #
+    #  import sklearn
+    #
+    #  f1_score = sklearn.metrics.f1_score(z_tilde, data.z_test)
+    #  print("F1 score:", f1_score)
 
-    #  print(z_tilde)
-    #  predict_positive = z_tilde > 0.5
-    correct = z_tilde == data.z_test
-    print(correct)
-    accuracy = np.sum(correct) / len(correct)
-    print(accuracy)
+    net.plot_cost(data.X_train, data.z_train)
+
+
+if __name__ == "__main__":
+    LAMBDA = 0.01
+    #  np.random.seed(42)
+    #  test_breast_cancer_data(LAMBDA)
+    np.random.seed(42)
+    test_franke_data()
