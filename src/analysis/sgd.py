@@ -9,11 +9,6 @@ from ordinary_least_squares import OrdinaryLeastSquares
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
-# TODO: Why are these imported and not used?
-#  from sklearn.linear_model import LinearRegression, SGDRegressor
-#  from sklearn.pipeline import make_pipeline
-#  from sklearn.preprocessing import StandardScaler
-
 
 def find_optimal_epochs_and_minibatches(data, epochs, minibatches):
     mse_matrix = np.zeros((len(minibatches), len(epochs)))
@@ -142,7 +137,7 @@ def main():
         x_label="Epoch",
         y_label="Minibatch",
         selected_idx=min_mse_index,
-        filename = "MSE_for_OLS_ta_lmb_heat.pdf"
+        filename="MSE_for_OLS_ta_lmb_heat.pdf",
     )
     mesh_epochs, mesh_minibatches = np.meshgrid(EPOCHS, MINIBATCHES)
     surface_plot(
@@ -191,7 +186,7 @@ def main():
         x_label="η",
         y_label="λ",
         selected_idx=min_mse_index_ridge,
-        )
+    )
 
     """ Comparing to 5th order polynoma fit that uses explicit solution for beta using Ridge"""
     (

@@ -216,9 +216,10 @@ def test_breast_cancer_data(lambda_):
     net.fit(
         data.X_train,
         data.z_train,
-        epochs=200,
+        epochs=1000,
         learning_rate=0.001,
         lambda_=lambda_,
+        verbose=True,
     )
 
     #  z_tilde = net.predict(data.X_train)
@@ -226,13 +227,13 @@ def test_breast_cancer_data(lambda_):
     #  accuracy = np.sum(correct) / len(correct)
     #  print("Accuracy train:", accuracy)
     line_plot(
-        "Breast cancer data",
+        "",
         [list(range(len(net.costs)))],
         [net.costs],
         ["Cost"],
         "epoch",
         "cost",
-        filename="franke_ffnn.pdf",
+        filename="breast_cancer_ffnn.pdf",
     )
 
     z_tilde = net.predict(data.X_test)
@@ -302,10 +303,11 @@ def test_franke_data():
         data.z_train,
         epochs=1000,
         learning_rate=0.001,
+        verbose=True,
     )
 
     line_plot(
-        "Franke data",
+        "",
         [list(range(len(net.costs)))],
         [net.costs],
         ["Cost"],
