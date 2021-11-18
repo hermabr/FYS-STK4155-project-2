@@ -12,30 +12,37 @@ class Layer:
         self.output = self.activation(np.matmul(inputs, self.weights) + self.bias)
         return self.output
 
-    def backward(self, delta, output_transposed):
+    def backward(self, delta, output_transposed, learning_rate):
         delta_weights = np.matmul(output_transposed, delta)
         delta_bias = delta
+
+        self.weights -= delta_weights * learning_rate
+        self.bias -= delta_bias * learning_rate
 
         delta = np.matmul(delta, self.weights.T) * self.activation(
             self.inputs, derivative=True
         )
-        #  delta = delta * self.activation(self.inputs, derivative=True)
-
-        self.weights -= delta_weights
-        self.bias -= delta_bias
 
         return delta
 
-    def update_params(self, delta_weights, delta_bias):
-        self.weights -= delta_weights
-        self.bias -= delta_bias
-
     def __repr__(self):
-        #  return f"[{self.weights.shape}, {self.bias.shape}]"
         return f"{self.__name__()}: {self.weights.shape}"
 
     def __name__(self):
         return "Abstract layer class"
+
+
+class LinearLayer(Layer):
+    def __init__(self, n_inputs, n_neurons):
+        super().__init__(n_inputs, n_neurons, self.linear)
+
+    def linear(self, x, derivative=False):
+        if derivative:
+            return np.ones_like(x)
+        return x
+
+    def __name__(self):
+        return "LinearLayer"
 
 
 class SigmoidLayer(Layer):
@@ -51,14 +58,25 @@ class SigmoidLayer(Layer):
         return "SigmoidLayer"
 
 
-class LinearLayer(Layer):
-    def __init__(self, n_inputs, n_neurons):
-        super().__init__(n_inputs, n_neurons, self.linear)
+class LeakyReluLayer(Layer):
+    def __init__(self, n_inputs, n_neurons, c=0.01):
+        super().__init__(n_inputs, n_neurons, self.leaky_relu)
 
-    def linear(self, x, derivative=False):
+        self.c = c
+
+    def leaky_relu(self, x, derivative=False):
         if derivative:
-            return np.ones_like(x)
-        return x
+            return np.where(x > 0, 1, self.c)
+
+        return np.maximum(x, self.c * x)
 
     def __name__(self):
-        return "LinearLayer"
+        return "LeakyReluLayer"
+
+
+class ReluLayer(LeakyReluLayer):
+    def __init__(self, n_inputs, n_neurons):
+        super().__init__(n_inputs, n_neurons, 0)
+
+    def __name__(self):
+        return "ReluLayer"

@@ -2,11 +2,18 @@ from generate_data import BreastCancerData, FrankeData
 from tqdm import tqdm
 import numpy as np
 from sklearn.metrics import mean_squared_error
-from layers import SigmoidLayer, LinearLayer
+from layers import LinearLayer, SigmoidLayer, LeakyReluLayer, ReluLayer
 
 
 class FFNN:
-    def __init__(self, n_inputs, hidden_sizes=[2], n_categories=1):
+    def __init__(
+        self,
+        n_inputs,
+        hidden_sizes=[2],
+        n_categories=1,
+        hidden_layers=SigmoidLayer,
+        final_layer=LinearLayer,
+    ):
         self.n_inputs = n_inputs
         self.n_categories = n_categories
         self.n_hidden_layers = len(hidden_sizes)
@@ -16,9 +23,9 @@ class FFNN:
         self.layers.append(LinearLayer(1, 1))
         for i in range(len(self.sizes) - 1):
             if i != len(self.sizes) - 1:
-                self.layers.append(SigmoidLayer(self.sizes[i], self.sizes[i + 1]))
+                self.layers.append(hidden_layers(self.sizes[i], self.sizes[i + 1]))
             else:
-                self.layers.append(LinearLayer(1, 1))
+                self.layers.append(final_layer(1, 1))
 
     def forward_pass(self, x):
         self.layers[0].output = x.reshape(1, -1)
@@ -29,29 +36,21 @@ class FFNN:
     def grad_sigmoid(self, x):
         return x * (1 - x)
 
-    def backward(self, y):
+    def backward(self, y, learning_rate):
         L = self.n_hidden_layers + 1
         delta = self.layers[L].output - y
 
         for k in range(L, 0, -1):
-            delta = self.layers[k].backward(delta, self.layers[k - 1].output.T)
-            #  delta_weights = np.matmul(self.layers[k - 1].output.T, delta_A)
-            #  delta_bias = delta_A
-            #
-            #  delta_H = np.matmul(delta_A, self.layers[k].weights.T)
-            #  delta_A = np.multiply(delta_H, self.grad_sigmoid(self.layers[k - 1].output))
-            #
-            #  self.layers[k].update_params(
-            #      self.learning_rate * delta_weights, self.learning_rate * delta_bias
-            #  )
+            delta = self.layers[k].backward(
+                delta, self.layers[k - 1].output.T, learning_rate
+            )
 
     def fit(self, X, Y, epochs=1, learning_rate=0.001):
-        self.learning_rate = learning_rate
         # TODO: epochs and iterations
-        for e in tqdm(range(epochs), total=epochs, unit="epoch"):
+        for e in tqdm(range(epochs), total=epochs, unit="epochs"):
             for x, y in zip(X, Y):
                 self.forward_pass(x)
-                self.backward(y)
+                self.backward(y, learning_rate=learning_rate)
 
     def predict(self, X):
         Y_pred = []
@@ -66,13 +65,8 @@ if __name__ == "__main__":
     data = BreastCancerData(test_size=0.2)
     #  data = FrankeData(20, 1, test_size=0.2)
 
-    #  ffsnn = FFSNNetwork(2, [2, 3])
-    #  ffsnn.fit(X_train, Y_train, epochs=1000, learning_rate=0.001, display_loss=True)
-    net = FFNN(data.X_train.shape[1], [10, 20, 4])
+    net = FFNN(data.X_train.shape[1], [10, 20, 4], final_layer=SigmoidLayer)
 
-    #  ffsnn.fit(
-    #      data.X_train, data.z_train, epochs=500, learning_rate=0.001, display_loss=True
-    #  )
     net.fit(
         data.X_train,
         data.z_train,
@@ -84,8 +78,10 @@ if __name__ == "__main__":
     z_tilde = net.predict(data.X_test)
 
     mse = np.mean((data.z_test - z_tilde) ** 2)
-    print(mse)
+    print("BreastCancerData")
+    print(f"MSE: {mse}")
 
+    #  print(z_tilde)
     predict_positive = z_tilde > 0.5
     correct = predict_positive == data.z_test
     print(correct)
