@@ -91,7 +91,7 @@ class FFNN:
                 delta, self.layers[k - 1].output.T, learning_rate, self.lambda_
             )
 
-    def fit(self, X, Y, epochs=1000, learning_rate=0.001, lambda_=0):
+    def fit(self, X, Y, epochs=1000, learning_rate=0.001, lambda_=0, verbose=False):
         """Fit the model to the training data
 
         Parameters
@@ -106,10 +106,16 @@ class FFNN:
                 learning rate
             lambda_ : float
                 regularization parameter
+            verbose : bool
+                whether to print progress
         """
         self.lambda_ = lambda_
         self.costs = []
-        for e in tqdm(range(epochs), total=epochs, unit="epochs"):
+        for e in (
+            tqdm(range(epochs), total=epochs, unit="epochs")
+            if verbose
+            else range(epochs)
+        ):
             for x, y in zip(X, Y):
                 self.forward(x)
                 self.backward(y, learning_rate=learning_rate)

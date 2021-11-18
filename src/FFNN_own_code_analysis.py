@@ -25,10 +25,11 @@ def accuracy_score_numpy(Y_test, Y_pred):
 data = BreastCancerData(test_size=0.2, scale_data=True)
 
 
-N = 2  # TODO: increase N in final runthroug
+N = 4  # TODO: increase N in final runthroug
 
 learning_rates = np.linspace(0.005, 0.1, N)
 lambdas = np.linspace(0.001, 0.1, N)
+EPOCHS = 1000
 
 # learning_rates = np.linspace(0.001, 10, N) #TODO: as the code is now we need this range, but isn't it a bit too big? Something wrong? Ask professor!
 # lambdas = np.linspace(0.001, 2, N)
@@ -74,7 +75,7 @@ for learning_rate in learning_rates:
                 ffnn_own.fit(
                     data.X_train,
                     data.z_train,
-                    epochs=200,
+                    epochs=EPOCHS,
                     learning_rate=learning_rate,
                     lambda_=lambda_,
                 )
@@ -97,7 +98,11 @@ for learning_rate in learning_rates:
                 dict_fn[(learning_rate, lambda_)] = fn / total_nbr_obs
                 dict_tp[(learning_rate, lambda_)] = tp / total_nbr_obs
 
-                ppv = tp / (tp + fp)
+                if tp + fp == 0:
+                    ppv = 0
+                else:
+                    ppv = tp / (tp + fp)
+
                 dict_ppv[(learning_rate, lambda_, nbr_lay, nbr_nodes)] = ppv
 
                 if tn + fn == 0:
@@ -367,15 +372,15 @@ ffnn_own_optimal.fit(
 
 z_test_predict_ffnn_own = ffnn_own_optimal.predict(data.X_test)
 
-prediction_FFNN = ffnn_own_optimal.predict(data.X_test)
+z_tilde = ffnn_own_optimal.predict(data.X_test)
 
-z_tilde = data.z_test < 0.5
+#  z_tilde = data.z_test < 0.5
 
-tn_fp, fn_tp = confusion_matrix(z_tilde, prediction_FFNN)
+tn_fp, fn_tp = confusion_matrix(z_tilde, data.z_test)
 
 
-print(confusion_matrix(z_tilde, z_test_FFNN_predict))
-conf_mat = confusion_matrix(z_tilde, z_test_FFNN_predict)
+print(confusion_matrix(z_tilde, data.z_test))
+conf_mat = confusion_matrix(z_tilde, data.z_test)
 
 columns = ["Predicted Benign", "Predicted Malignant"]
 rows = ["True Benign", "True Malignant"]
