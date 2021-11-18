@@ -1,8 +1,8 @@
 from config.neural_network import *
-from generate_data import FrankeData
+from generate_data import FrankeData, BreastCancerData
 from FFNN import FFNN
 import numpy as np
-from generate_data import BreastCancerData
+from layers import LinearLayer, SigmoidLayer, LeakyReluLayer, ReluLayer
 from sklearn.metrics import confusion_matrix, f1_score
 import pandas as pd
 import seaborn as sns
@@ -16,28 +16,78 @@ def accuracy_score_numpy(Y_test, Y_pred):
     return np.sum(Y_test == Y_pred) / len(Y_test)
 
 
+def test_different_hidden_layers_classification():
+    # Create data for regression
+    data = BreastCancerData(test_size=0.2)
+
+    for layer in [SigmoidLayer, LinearLayer, LeakyReluLayer, ReluLayer]:
+        print(layer.__name__)
+        net = FFNN(
+            data.X_train.shape[1],
+            (10, 20, 4),
+            hidden_layers=layer,
+            final_layer=SigmoidLayer,
+            classification=True,
+            n_categories=1,
+        )
+
+        net.fit(
+            data.X_train,
+            data.z_train,
+            epochs=1000,
+            #  epochs=100,
+            learning_rate=0.001,
+        )
+
+        # Evaluate
+        z_tilde = net.predict(data.X_test)
+        #  mse = np.mean((z_tilde - data.z_train) ** 2)
+        #  print("MSE:", mse)
+
+        print("Accuracy score: ", accuracy_score_numpy(data.z_test, z_tilde))
+        #  print("Confusion matrix: \n", confusion_matrix(data.z_test, z_tilde))
+        print("F1 score: ", f1_score(data.z_test, z_tilde, average="weighted"))
+
+
+def test_different_hidden_layers_regression():
+    data = FrankeData(20, 1, test_size=0.2)
+
+    for layer in [SigmoidLayer, LinearLayer, LeakyReluLayer, ReluLayer]:
+        print(layer.__name__)
+        net = FFNN(
+            data.X_train.shape[1],
+            (10, 20, 4),
+            hidden_layers=layer,
+            final_layer=LinearLayer,
+            classification=False,
+            n_categories=1,
+        )
+
+        net.fit(
+            data.X_train,
+            data.z_train,
+            epochs=1000,
+            #  epochs=100,
+            learning_rate=0.001,
+        )
+
+        # Evaluate
+        z_tilde = net.predict(data.X_test)
+        mse = np.mean((z_tilde - data.z_test) ** 2)
+        print("MSE:", mse)
+
+
 def test_different_hidden_layers():
     """
-    Test different hidden layers
+    Test different hidden layers (for regression)
     """
-    # Create data
-    data = FrankeData()
-
-    # Create neural network
-
-    # Train neural network
-    nn.fit(X_train, Y_train)
-
-    # Predict
-    Y_pred = nn.predict(X_test)
-
-    # Evaluate
-    print("Accuracy score: ", accuracy_score_numpy(Y_test, Y_pred))
-    print("Confusion matrix: \n", confusion_matrix(Y_test, Y_pred))
-    print("F1 score: ", f1_score(Y_test, Y_pred, average="weighted"))
+    test_different_hidden_layers_classification()
+    test_different_hidden_layers_regression()
 
 
 def main():
+    test_different_hidden_layers()
+    exit()
 
     data = BreastCancerData(test_size=0.2, scale_data=True)
 
