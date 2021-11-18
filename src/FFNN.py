@@ -66,9 +66,9 @@ class FFNN:
             for x, y in zip(X, Y):
                 self.forward_pass(x)
                 self.backward(y, learning_rate=learning_rate)
-        # do cost per epoch, not per iteration
+        # group cost by each epoch
         self.costs = np.sum(
-            np.array(self.costs).reshape((len(X), int(len(self.costs) / len(X)))),
+            np.array(self.costs).reshape((epochs, int(len(self.costs) / epochs))),
             axis=1,
         )
 
@@ -86,11 +86,7 @@ class FFNN:
         if self.classification:
             cost = -1 / m * np.nansum(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))
         else:
-            cost = -1 / m * 0.5 * np.nansum((y - y_hat) ** 2)
-        #  logprobs = np.multiply(-np.log(y_hat), y) + np.multiply(
-        #      -np.log(1 - y_hat), 1 - y
-        #  )
-        #  cost = 1.0 / m * np.nansum(logprobs)
+            cost = 1 / m * np.nansum((y - y_hat) ** 2)
         return cost
 
     def cost_with_regularization(self, y_hat, y, lambda_):
@@ -101,13 +97,6 @@ class FFNN:
         )
         reg_cost = cost + L2_regularization_cost
         return reg_cost
-
-    def plot_cost(self, X, Y):
-        plt.plot(self.costs)
-        plt.ylabel("cost")
-        plt.xlabel("iterations (x1,000)")
-        plt.title("Learning rate = 0.001")
-        plt.show()
 
 
 def test_breast_cancer_data(lambda_):
@@ -155,8 +144,8 @@ def test_franke_data():
     net = FFNN(
         data.X_train.shape[1],
         (10, 20, 4),
-        final_layer=SigmoidLayer,
-        classification=True,
+        final_layer=LinearLayer,
+        classification=False,
         n_categories=1,
     )
 
@@ -164,6 +153,7 @@ def test_franke_data():
         data.X_train,
         data.z_train,
         epochs=1000,
+        #  epochs=100,
         learning_rate=0.001,
     )
 
@@ -171,19 +161,19 @@ def test_franke_data():
     mse = np.mean((z_tilde - data.z_train) ** 2)
     print("MSE:", mse)
 
-    #  z_tilde = net.predict(data.X_test)
-    #  correct = z_tilde == data.z_test
-    #  accuracy = np.sum(correct) / len(correct)
-    #  print("Accuracy test:", accuracy)
-    #
-    #  print("Weight sum:", np.sum([np.sum(layer.weights) for layer in net.layers]))
-    #
-    #  import sklearn
-    #
-    #  f1_score = sklearn.metrics.f1_score(z_tilde, data.z_test)
-    #  print("F1 score:", f1_score)
+    #  net.plot_cost(data.X_train, data.z_train)
 
-    net.plot_cost(data.X_train, data.z_train)
+    from plot import line_plot
+
+    line_plot(
+        "Franke function ...",
+        [list(range(len(net.costs)))],
+        [net.costs],
+        ["Cost"],
+        "epoch",
+        "cost",
+        filename="franke_ffnn.pdf",
+    )
 
 
 if __name__ == "__main__":
