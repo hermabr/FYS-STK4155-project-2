@@ -117,7 +117,7 @@ def heat_plot(
         table_values,
         xticklabels=signif(xticklabels, 2),
         yticklabels=signif(yticklabels, 2),
-    )
+    annot = True)
     from matplotlib.patches import Rectangle
 
     if selected_idx:

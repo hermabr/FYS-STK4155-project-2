@@ -120,6 +120,7 @@ def find_ridge_mse(data, lambdas):
 
 def main():
     """creating data"""
+    np.random.seed(4)
     data = FrankeData(ANALYSIS_DATA_SIZE, ANALYSIS_DEGREE, test_size=ANALYSIS_TEST_SIZE)
 
     """ making a dictionary for MSE calculated with SGD for OLS. The key is a tuple (number_of_epochs, number_of_minibatches), value is the MSE for that choice"""
@@ -141,6 +142,7 @@ def main():
         x_label="Epoch",
         y_label="Minibatch",
         selected_idx=min_mse_index,
+        filename = "MSE_for_OLS_ta_lmb_heat.pdf"
     )
     mesh_epochs, mesh_minibatches = np.meshgrid(EPOCHS, MINIBATCHES)
     surface_plot(
@@ -189,7 +191,7 @@ def main():
         x_label="η",
         y_label="λ",
         selected_idx=min_mse_index_ridge,
-    )
+        )
 
     """ Comparing to 5th order polynoma fit that uses explicit solution for beta using Ridge"""
     (
