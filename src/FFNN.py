@@ -15,6 +15,10 @@ class FFNN:
         hidden_layers=SigmoidLayer,
         final_layer=LinearLayer,
         classification=False,
+        epochs=1000,
+        learning_rate=0.001,
+        lambda_=0,
+        verbose=False,
     ):
         """Initialize the FFNN
 
@@ -32,6 +36,14 @@ class FFNN:
                 final layer class
             classification : bool
                 whether the network is a classification problem
+            epochs : int
+                number of epochs
+            learning_rate : float
+                learning rate
+            lambda_ : float
+                regularization parameter
+            verbose : bool
+                whether to print progress
         """
         self.n_inputs = n_inputs
         self.n_categories = n_categories
@@ -39,6 +51,10 @@ class FFNN:
         self.classification = classification
         self.sizes = [self.n_inputs] + list(hidden_sizes) + [self.n_categories]
         self.layers = []
+        self.lambda_ = lambda_
+        self.epochs = epochs
+        self.verbose = verbose
+        self.learning_rate = learning_rate
 
         self.layers.append(LinearLayer(1, 1))
         for i in range(len(self.sizes) - 1):
@@ -91,7 +107,7 @@ class FFNN:
                 delta, self.layers[k - 1].output.T, learning_rate, self.lambda_
             )
 
-    def fit(self, X, Y, epochs=1000, learning_rate=0.001, lambda_=0, verbose=False):
+    def fit(self, X, Y):
         """Fit the model to the training data
 
         Parameters
@@ -100,28 +116,21 @@ class FFNN:
                 input data
             Y : numpy.ndarray
                 target values
-            epochs : int
-                number of epochs
-            learning_rate : float
-                learning rate
-            lambda_ : float
-                regularization parameter
-            verbose : bool
-                whether to print progress
         """
-        self.lambda_ = lambda_
         self.costs = []
         for e in (
-            tqdm(range(epochs), total=epochs, unit="epochs")
-            if verbose
-            else range(epochs)
+            tqdm(range(self.epochs), total=self.epochs, unit="epochs")
+            if self.verbose
+            else range(self.epochs)
         ):
             for x, y in zip(X, Y):
                 self.forward(x)
-                self.backward(y, learning_rate=learning_rate)
+                self.backward(y, learning_rate=self.learning_rate)
         # group cost by each epoch
         self.costs = np.sum(
-            np.array(self.costs).reshape((epochs, int(len(self.costs) / epochs))),
+            np.array(self.costs).reshape(
+                (self.epochs, int(len(self.costs) / self.epochs))
+            ),
             axis=1,
         )
 
@@ -211,15 +220,15 @@ def test_breast_cancer_data(lambda_):
         final_layer=SigmoidLayer,
         classification=True,
         n_categories=1,
+        epochs=1000,
+        learning_rate=0.001,
+        lambda_=lambda_,
+        verbose=True,
     )
 
     net.fit(
         data.X_train,
         data.z_train,
-        epochs=1000,
-        learning_rate=0.001,
-        lambda_=lambda_,
-        verbose=True,
     )
 
     #  z_tilde = net.predict(data.X_train)
@@ -244,46 +253,7 @@ def test_breast_cancer_data(lambda_):
     print("Accuracy test:", accuracy)
     print("F1:", f1_score(data.z_test, z_tilde))
     print("PPV", precision_score(data.z_test, z_tilde, pos_label=1))
-    print(
-        "NPV",
-    )
-
-    print("\n\n")
-
-    from sklearn.metrics import confusion_matrix
-
-    tn_fp, fn_tp = confusion_matrix(data.z_test, z_tilde)
-    tn, fp = tn_fp
-    fn, tp = fn_tp
-    total_nbr_obs = len(z_tilde)
-    #  dict_tn[(learning_rate, lmb)]= tn/total_nbr_obs
-    #  dict_fp[(learning_rate, lmb)] = fp/total_nbr_obs
-    #  dict_fn[(learning_rate, lmb)]= fn/total_nbr_obs
-    #  dict_tp[(learning_rate, lmb)] = tp/total_nbr_obs
-
-    ppv = tp / (tp + fp)
-    #  dict_ppv[(learning_rate, lmb, nbr_lay, nbr_nodes)]= ppv
-
-    npv = tn / (tn + fn)
-    #  dict_npv[(learning_rate, lmb, nbr_lay, nbr_nodes)] = npv
-
-    #  dict_sensitivity[(learning_rate, lmb, nbr_lay, nbr_nodes)] = tp / (tp+fn)
-    #  dict_specificity[(learning_rate, lmb, nbr_lay, nbr_nodes)] = tn /(tn+fp)
-
-    F1_score = tp / (tp + 0.5 * (fp + fn))
-    print("F1:", F1_score)
-    print("PPV:", ppv)
-    print("NPV:", npv)
-    print("Sensitivity:", tp / (tp + fn))
-    print("Specificity:", tn / (tn + fp))
-    #  dict_F1_score[(learning_rate, lmb, nbr_lay, nbr_nodes)] = F1_score
-
-    #  import sklearn
-    #
-    #  f1_score = sklearn.metrics.f1_score(z_tilde, data.z_test)
-    #  print("F1 score:", f1_score)
-    #
-    #  net.plot_cost(data.X_train, data.z_train)
+    print("NPV")
 
 
 def test_franke_data():
@@ -293,17 +263,19 @@ def test_franke_data():
         data.X_train.shape[1],
         #  (10, 20, 4),
         (40, 40, 40),
+        hidden_layers=LeakyReluLayer,
         final_layer=LinearLayer,
         classification=False,
         n_categories=1,
+        epochs=1000,
+        learning_rate=0.001,
+        verbose=True,
+        lambda_=0.01,
     )
 
     net.fit(
         data.X_train,
         data.z_train,
-        epochs=1000,
-        learning_rate=0.001,
-        verbose=True,
     )
 
     line_plot(
@@ -318,14 +290,16 @@ def test_franke_data():
 
     z_tilde = net.predict(data.X_train)
     mse = np.mean((z_tilde - data.z_train) ** 2)
+    r2 = 1 - mse / np.var(data.z_train)
     print("MSE:", mse)
+    print("R2:", r2)
 
     #  net.plot_cost(data.X_train, data.z_train)
 
 
 if __name__ == "__main__":
     LAMBDA = 0.01
-    np.random.seed(42)
-    test_breast_cancer_data(LAMBDA)
     #  np.random.seed(42)
-    #  test_franke_data()
+    #  test_breast_cancer_data(LAMBDA)
+    np.random.seed(42)
+    test_franke_data()
