@@ -12,6 +12,20 @@ sns.set()
 
 
 def signif(x, p):
+    """Returns p significant digits of x
+
+    Parameters
+    ----------
+        x : np.array
+            The values to round
+        p : int
+            The number of significant digits
+
+    Returns
+    -------
+        float
+            The rounded number
+    """
     x = np.asarray(x)
     x_positive = np.where(np.isfinite(x) & (x != 0), np.abs(x), 10 ** (p - 1))
     mags = 10 ** (p - 1 - np.floor(np.log10(x_positive)))
@@ -117,7 +131,8 @@ def heat_plot(
         table_values,
         xticklabels=signif(xticklabels, 2),
         yticklabels=signif(yticklabels, 2),
-    annot = True)
+        annot=True,
+    )
     from matplotlib.patches import Rectangle
 
     if selected_idx:

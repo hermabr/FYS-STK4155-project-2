@@ -22,10 +22,8 @@ class OrdinaryLeastSquares(LinearRegression):
 
         Parameters
         ----------
-            x : np.array
-                The x values for which to fit the model
-            y : np.array
-                The y values for which to fit the model
+            X : np.array
+                The X values for which to fit the model
             z : np.array
                 The z values for which to fit the model
         """
@@ -34,6 +32,22 @@ class OrdinaryLeastSquares(LinearRegression):
         self.beta = hessian_inv @ X.T @ z
 
     def loss_function(self, X, z, beta):
+        """Returns the loss function for the model
+
+        Parameters
+        ----------
+            X : np.array
+                The X values for which to calculate the loss function
+            z : np.array
+                The z values for which to calculate the loss function
+            beta : np.array
+                The beta values for which to calculate the loss function
+
+        Returns
+        -------
+            loss : float
+                The loss function for the model
+        """
         loss = np.mean((z.reshape(-1, 1) - X @ beta) ** 2)
         return loss
 
@@ -42,10 +56,8 @@ class OrdinaryLeastSquares(LinearRegression):
 
         Parameters
         ----------
-            x : np.array
-                The x values for which to calculate the confidence intervals
-            y : np.array
-                The y values for which to calculate the confidence intervals
+            X : np.array
+                The X values for which to calculate the confidence intervals
             z : np.array
                 The z values for which to calculate the confidence intervals
             z_tilde : np.array

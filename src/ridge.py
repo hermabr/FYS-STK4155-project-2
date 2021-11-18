@@ -35,11 +35,25 @@ class Ridge(LinearRegression):
 
         self.beta = hessian_and_regularized_inv @ X.T @ z
 
-    #  def loss_function(self, X, z, beta):
-    #      loss = np.mean((z.reshape(-1, 1) - X @ beta) ** 2)
-    #      return loss
-
     def loss_function(self, X, z, beta, lambda_):
+        """Returns the loss function for the ridge regression model
+
+        Parameters
+        ----------
+            X : np.array
+                The X design matrix for which to calculate the loss function
+            z : np.array
+                The z values for which to calculate the loss function
+            beta : np.array
+                The beta values for which to calculate the loss function
+            lambda_ : float
+                The value of the penalty term
+
+        Returns
+        -------
+            loss : float
+                The loss function for the ridge regression model
+        """
         loss = np.mean((z.reshape(-1, 1) - X @ beta) ** 2) + lambda_ * sum(beta ** 2)
         return loss
 
@@ -49,9 +63,7 @@ class Ridge(LinearRegression):
         Parameters
         ----------
             x : np.array
-                The x values for which to calculate the confidence intervals
-            y : np.array
-                The y values for which to calculate the confidence intervals
+                The X values for which to calculate the confidence intervals
             z : np.array
                 The z values for which to calculate the confidence intervals
             z_tilde : np.array

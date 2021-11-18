@@ -344,6 +344,17 @@ class FrankeData(Data):
 
 class BreastCancerData(Data):
     def __init__(self, test_size=None, intercept=False, scale_data=True):
+        """The data class for the breast cancer data
+
+        Parameters
+        ----------
+            test_size : float/None
+                The test size for which to store the data. None means no test data
+            intercept : bool
+                A bool specifying if the data should be scaled
+            scale_data : bool
+                A bool specifying if the data should be scaled
+        """
         breast_cancer_data = load_breast_cancer()
         X = breast_cancer_data.data
         y = breast_cancer_data.target
@@ -357,7 +368,18 @@ class BreastCancerData(Data):
         self.store_data(X, y, test_size)
 
     def scale_data(self, data):
-        """Scale data per column"""
+        """Scales the data to be between 0 and 1
+
+        Parameters
+        ----------
+            data : np.array
+                The data to scale
+
+        Returns
+        -------
+            data : np.array
+                The scaled data
+        """
         for i in range(data.shape[1]):
             data[:, i] = (data[:, i] - np.min(data[:, i])) / (
                 np.max(data[:, i]) - np.min(data[:, i])

@@ -22,6 +22,28 @@ class LinearRegression(object):
     def sgd(
         self, X, z, n_epochs, n_mini_batches, tol=10e-7, learning_multiplier=1.0
     ):  # TODO: Include a eta function, maybe just change t0, t1
+        """A stochastic gradient descent method for the linear regression model
+
+        Parameters
+        ----------
+            X : np.array
+                The x values for which to fit the model
+            z : np.array
+                The y values for which to fit the model
+            n_epochs : int
+                The number of epochs to run the gradient descent for
+            n_mini_batches : int
+                The number of mini batches to use for the gradient descent
+            tol : float
+                The tolerance for the gradient descent
+            learning_multiplier : float
+                The learning multiplier for the gradient descent
+
+        Updates
+        -------
+            beta : np.array
+                The fitted beta values
+        """
         get_grad = grad(self.loss_function, argnum=2)
         beta = np.random.randn(X.shape[1], 1)
         n_inputs = len(z)
@@ -58,10 +80,8 @@ class LinearRegression(object):
 
         Parameters
         ----------
-            x : np.array
-                The x values for the which to predict, needs to be in a 1d shape
-            y : np.array
-                The y values for the which to predict, needs to be in a 1d shape
+            X : np.array
+                The x values for which to predict
 
         Returns
         -------
@@ -83,10 +103,8 @@ class LinearRegression(object):
 
         Parameters
         ----------
-            x : np.array
-                The x values for which to fit the model
-            y : np.array
-                The y values for which to fit the model
+            X : np.array
+                The X values for which to fit the model
             z : np.array
                 The z values for which to fit the model
 
@@ -100,7 +118,23 @@ class LinearRegression(object):
         )
 
     def loss_function(self, X, z, beta):
-        return NotImplementedError("TODO: Not implemented message")
+        """The loss function for the linear regression model
+
+        Parameters
+        ----------
+            X : np.array
+                The X values for which to fit the model
+            z : np.array
+                The z values for which to fit the model
+            beta : np.array
+                The beta values for which to fit the model
+
+        Raises
+        ------
+            NotImplementedError
+                Raises a not implemented error if the abstract loss function is ran
+        """
+        raise NotImplementedError("TODO: Not implemented message")
 
     def confidence_intervals(self, *_):
         """Abstract method for getting the confidence interval for a model
@@ -190,6 +224,18 @@ class LinearRegression(object):
         return mse / k_folds
 
     def learning_schedule(self, t):
+        """Method for getting the learning schedule
+
+        Parameters
+        ----------
+            t : int
+                The current iteration of the learning schedule
+
+        Returns
+        -------
+            eta : float
+                The learning schedule for the current iteration
+        """
         return self.t0 / (t + self.t1)
 
     @staticmethod

@@ -15,6 +15,23 @@ class FFNN:
         final_layer=LinearLayer,
         classification=False,
     ):
+        """Initialize the FFNN
+
+        Parameters
+        ----------
+            n_inputs : int
+                number of inputs
+            hidden_sizes : list
+                list of hidden layer sizes
+            n_categories : int
+                number of categories
+            hidden_layers : class
+                hidden layer class
+            final_layer : class
+                final layer class
+            classification : bool
+                whether the network is a classification problem
+        """
         self.n_inputs = n_inputs
         self.n_categories = n_categories
         self.n_hidden_layers = len(hidden_sizes)
@@ -30,12 +47,33 @@ class FFNN:
                 self.layers.append(final_layer(n_categories, n_categories))
 
     def forward(self, x):
+        """Forward pass through the network
+
+        Parameters
+        ----------
+            x : numpy.ndarray
+                input data
+
+        Returns
+        -------
+            numpy.ndarray
+                predicted values
+        """
         self.layers[0].output = x.reshape(1, -1)
         for i in range(self.n_hidden_layers + 1):
             self.layers[i + 1].forward(self.layers[i].output)
         return self.layers[-1].output
 
     def backward(self, y, learning_rate):
+        """Backward pass through the network
+
+        Parameters
+        ----------
+            y : numpy.ndarray
+                target values
+            learning_rate : float
+                learning rate
+        """
         L = self.n_hidden_layers + 1
         delta = self.layers[L].output - y
 
@@ -52,14 +90,22 @@ class FFNN:
                 delta, self.layers[k - 1].output.T, learning_rate, self.lambda_
             )
 
-    def fit(
-        self,
-        X,
-        Y,
-        epochs=1000,
-        learning_rate=0.001,
-        lambda_=0,
-    ):
+    def fit(self, X, Y, epochs=1000, learning_rate=0.001, lambda_=0):
+        """Fit the model to the training data
+
+        Parameters
+        ----------
+            X : numpy.ndarray
+                input data
+            Y : numpy.ndarray
+                target values
+            epochs : int
+                number of epochs
+            learning_rate : float
+                learning rate
+            lambda_ : float
+                regularization parameter
+        """
         self.lambda_ = lambda_
         self.costs = []
         for e in tqdm(range(epochs), total=epochs, unit="epochs"):
@@ -73,6 +119,18 @@ class FFNN:
         )
 
     def predict(self, X):
+        """Predict the output of the network
+
+        Parameters
+        ----------
+            X : numpy.ndarray
+                input data
+
+        Returns
+        -------
+            numpy.ndarray
+                predicted values
+        """
         Y_pred = []
         for x in X:
             y_pred = self.forward(x)
@@ -82,6 +140,20 @@ class FFNN:
         return np.array(Y_pred).squeeze()
 
     def cost(self, y_hat, y):
+        """Calculate the cost of the network
+
+        Parameters
+        ----------
+            y_hat : numpy.ndarray
+                predicted values
+            y : numpy.ndarray
+                target values
+
+        Returns
+        -------
+            float
+                cost
+        """
         m = len(y_hat)
         if self.classification:
             cost = -1 / m * np.nansum(y * np.log(y_hat) + (1 - y) * np.log(1 - y_hat))
@@ -90,6 +162,22 @@ class FFNN:
         return cost
 
     def cost_with_regularization(self, y_hat, y, lambda_):
+        """Calculate the cost of the network with regularization
+
+        Parameters
+        ----------
+            y_hat : numpy.ndarray
+                predicted values
+            y : numpy.ndarray
+                target values
+            lambda_ : float
+                regularization parameter
+
+        Returns
+        -------
+            float
+                cost
+        """
         m = len(y_hat)
         cost = self.cost(y_hat, y)
         L2_regularization_cost = (
@@ -99,43 +187,50 @@ class FFNN:
         return reg_cost
 
 
-def test_breast_cancer_data(lambda_):
-    data = BreastCancerData(test_size=0.2)
-
-    net = FFNN(
-        data.X_train.shape[1],
-        (10, 20, 4),
-        final_layer=SigmoidLayer,
-        classification=True,
-        n_categories=1,
-    )
-
-    net.fit(
-        data.X_train,
-        data.z_train,
-        epochs=1000,
-        learning_rate=0.001,
-        lambda_=lambda_,
-    )
-
-    z_tilde = net.predict(data.X_train)
-    correct = z_tilde == data.z_train
-    accuracy = np.sum(correct) / len(correct)
-    print("Accuracy train:", accuracy)
-
-    z_tilde = net.predict(data.X_test)
-    correct = z_tilde == data.z_test
-    accuracy = np.sum(correct) / len(correct)
-    print("Accuracy test:", accuracy)
-
-    print("Weight sum:", np.sum([np.sum(layer.weights) for layer in net.layers]))
-
-    import sklearn
-
-    f1_score = sklearn.metrics.f1_score(z_tilde, data.z_test)
-    print("F1 score:", f1_score)
-
-    net.plot_cost(data.X_train, data.z_train)
+#  def test_breast_cancer_data(lambda_):
+#      """ Test the FFNN on the breast cancer data
+#
+#      Parameters
+#      ----------
+#          lambda_ : float
+#              regularization parameter
+#      """
+#      data = BreastCancerData(test_size=0.2)
+#
+#      net = FFNN(
+#          data.X_train.shape[1],
+#          (10, 20, 4),
+#          final_layer=SigmoidLayer,
+#          classification=True,
+#          n_categories=1,
+#      )
+#
+#      net.fit(
+#          data.X_train,
+#          data.z_train,
+#          epochs=1000,
+#          learning_rate=0.001,
+#          lambda_=lambda_,
+#      )
+#
+#      z_tilde = net.predict(data.X_train)
+#      correct = z_tilde == data.z_train
+#      accuracy = np.sum(correct) / len(correct)
+#      print("Accuracy train:", accuracy)
+#
+#      z_tilde = net.predict(data.X_test)
+#      correct = z_tilde == data.z_test
+#      accuracy = np.sum(correct) / len(correct)
+#      print("Accuracy test:", accuracy)
+#
+#      print("Weight sum:", np.sum([np.sum(layer.weights) for layer in net.layers]))
+#
+#      import sklearn
+#
+#      f1_score = sklearn.metrics.f1_score(z_tilde, data.z_test)
+#      print("F1 score:", f1_score)
+#
+#      net.plot_cost(data.X_train, data.z_train)
 
 
 def test_franke_data():
@@ -152,16 +247,10 @@ def test_franke_data():
     net.fit(
         data.X_train,
         data.z_train,
-        epochs=1000,
+        epochs=100,
         #  epochs=100,
         learning_rate=0.001,
     )
-
-    z_tilde = net.predict(data.X_train)
-    mse = np.mean((z_tilde - data.z_train) ** 2)
-    print("MSE:", mse)
-
-    #  net.plot_cost(data.X_train, data.z_train)
 
     from plot import line_plot
 
@@ -174,6 +263,12 @@ def test_franke_data():
         "cost",
         filename="franke_ffnn.pdf",
     )
+
+    z_tilde = net.predict(data.X_train)
+    mse = np.mean((z_tilde - data.z_train) ** 2)
+    print("MSE:", mse)
+
+    #  net.plot_cost(data.X_train, data.z_train)
 
 
 if __name__ == "__main__":
