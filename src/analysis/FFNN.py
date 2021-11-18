@@ -1,6 +1,6 @@
 from config.neural_network import *
 from generate_data import FrankeData
-from FFNN import NeuralNetwork
+from FFNN import FFNN
 import numpy as np
 from generate_data import BreastCancerData
 from sklearn.metrics import confusion_matrix, f1_score
@@ -14,6 +14,27 @@ import matplotlib.pyplot as plt
 
 def accuracy_score_numpy(Y_test, Y_pred):
     return np.sum(Y_test == Y_pred) / len(Y_test)
+
+
+def test_different_hidden_layers():
+    """
+    Test different hidden layers
+    """
+    # Create data
+    data = FrankeData()
+
+    # Create neural network
+
+    # Train neural network
+    nn.fit(X_train, Y_train)
+
+    # Predict
+    Y_pred = nn.predict(X_test)
+
+    # Evaluate
+    print("Accuracy score: ", accuracy_score_numpy(Y_test, Y_pred))
+    print("Confusion matrix: \n", confusion_matrix(Y_test, Y_pred))
+    print("F1 score: ", f1_score(Y_test, Y_pred, average="weighted"))
 
 
 def main():

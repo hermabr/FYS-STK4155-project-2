@@ -29,7 +29,7 @@ class FFNN:
             else:
                 self.layers.append(final_layer(n_categories, n_categories))
 
-    def forward_pass(self, x):
+    def forward(self, x):
         self.layers[0].output = x.reshape(1, -1)
         for i in range(self.n_hidden_layers + 1):
             self.layers[i + 1].forward(self.layers[i].output)
@@ -64,7 +64,7 @@ class FFNN:
         self.costs = []
         for e in tqdm(range(epochs), total=epochs, unit="epochs"):
             for x, y in zip(X, Y):
-                self.forward_pass(x)
+                self.forward(x)
                 self.backward(y, learning_rate=learning_rate)
         # group cost by each epoch
         self.costs = np.sum(
@@ -75,7 +75,7 @@ class FFNN:
     def predict(self, X):
         Y_pred = []
         for x in X:
-            y_pred = self.forward_pass(x)
+            y_pred = self.forward(x)
             Y_pred.append(y_pred)
         if self.classification:
             return np.array(Y_pred).squeeze() > 0.5
