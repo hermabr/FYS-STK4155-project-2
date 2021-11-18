@@ -1,3 +1,4 @@
+from plot import line_plot
 import matplotlib.pyplot as plt
 from generate_data import BreastCancerData, FrankeData
 from tqdm import tqdm
@@ -187,58 +188,104 @@ class FFNN:
         return reg_cost
 
 
-#  def test_breast_cancer_data(lambda_):
-#      """ Test the FFNN on the breast cancer data
-#
-#      Parameters
-#      ----------
-#          lambda_ : float
-#              regularization parameter
-#      """
-#      data = BreastCancerData(test_size=0.2)
-#
-#      net = FFNN(
-#          data.X_train.shape[1],
-#          (10, 20, 4),
-#          final_layer=SigmoidLayer,
-#          classification=True,
-#          n_categories=1,
-#      )
-#
-#      net.fit(
-#          data.X_train,
-#          data.z_train,
-#          epochs=1000,
-#          learning_rate=0.001,
-#          lambda_=lambda_,
-#      )
-#
-#      z_tilde = net.predict(data.X_train)
-#      correct = z_tilde == data.z_train
-#      accuracy = np.sum(correct) / len(correct)
-#      print("Accuracy train:", accuracy)
-#
-#      z_tilde = net.predict(data.X_test)
-#      correct = z_tilde == data.z_test
-#      accuracy = np.sum(correct) / len(correct)
-#      print("Accuracy test:", accuracy)
-#
-#      print("Weight sum:", np.sum([np.sum(layer.weights) for layer in net.layers]))
-#
-#      import sklearn
-#
-#      f1_score = sklearn.metrics.f1_score(z_tilde, data.z_test)
-#      print("F1 score:", f1_score)
-#
-#      net.plot_cost(data.X_train, data.z_train)
+def test_breast_cancer_data(lambda_):
+    """Test the FFNN on the breast cancer data
 
-
-def test_franke_data():
-    data = FrankeData(20, 1, test_size=0.2)
+    Parameters
+    ----------
+        lambda_ : float
+            regularization parameter
+    """
+    data = BreastCancerData(test_size=0.2, scale_data=True)
 
     net = FFNN(
         data.X_train.shape[1],
-        (10, 20, 4),
+        #  (10, 20, 4),
+        (40, 40, 40),
+        final_layer=SigmoidLayer,
+        classification=True,
+        n_categories=1,
+    )
+
+    net.fit(
+        data.X_train,
+        data.z_train,
+        epochs=200,
+        learning_rate=0.001,
+        lambda_=lambda_,
+    )
+
+    #  z_tilde = net.predict(data.X_train)
+    #  correct = z_tilde == data.z_train
+    #  accuracy = np.sum(correct) / len(correct)
+    #  print("Accuracy train:", accuracy)
+    line_plot(
+        "Breast cancer data",
+        [list(range(len(net.costs)))],
+        [net.costs],
+        ["Cost"],
+        "epoch",
+        "cost",
+        filename="franke_ffnn.pdf",
+    )
+
+    z_tilde = net.predict(data.X_test)
+    correct = z_tilde == data.z_test
+    accuracy = np.sum(correct) / len(correct)
+    from sklearn.metrics import f1_score, precision_score
+
+    print("Accuracy test:", accuracy)
+    print("F1:", f1_score(data.z_test, z_tilde))
+    print("PPV", precision_score(data.z_test, z_tilde, pos_label=1))
+    print(
+        "NPV",
+    )
+
+    print("\n\n")
+
+    from sklearn.metrics import confusion_matrix
+
+    tn_fp, fn_tp = confusion_matrix(data.z_test, z_tilde)
+    tn, fp = tn_fp
+    fn, tp = fn_tp
+    total_nbr_obs = len(z_tilde)
+    #  dict_tn[(learning_rate, lmb)]= tn/total_nbr_obs
+    #  dict_fp[(learning_rate, lmb)] = fp/total_nbr_obs
+    #  dict_fn[(learning_rate, lmb)]= fn/total_nbr_obs
+    #  dict_tp[(learning_rate, lmb)] = tp/total_nbr_obs
+
+    ppv = tp / (tp + fp)
+    #  dict_ppv[(learning_rate, lmb, nbr_lay, nbr_nodes)]= ppv
+
+    npv = tn / (tn + fn)
+    #  dict_npv[(learning_rate, lmb, nbr_lay, nbr_nodes)] = npv
+
+    #  dict_sensitivity[(learning_rate, lmb, nbr_lay, nbr_nodes)] = tp / (tp+fn)
+    #  dict_specificity[(learning_rate, lmb, nbr_lay, nbr_nodes)] = tn /(tn+fp)
+
+    F1_score = tp / (tp + 0.5 * (fp + fn))
+    print("F1:", F1_score)
+    print("PPV:", ppv)
+    print("NPV:", npv)
+    print("Sensitivity:", tp / (tp + fn))
+    print("Specificity:", tn / (tn + fp))
+    #  dict_F1_score[(learning_rate, lmb, nbr_lay, nbr_nodes)] = F1_score
+
+    #  import sklearn
+    #
+    #  f1_score = sklearn.metrics.f1_score(z_tilde, data.z_test)
+    #  print("F1 score:", f1_score)
+    #
+    #  net.plot_cost(data.X_train, data.z_train)
+
+
+def test_franke_data():
+    data = FrankeData(20, 1, test_size=0.2, scale_data=True)
+
+    net = FFNN(
+        data.X_train.shape[1],
+        #  (10, 20, 4),
+        (40, 40, 40),
         final_layer=LinearLayer,
         classification=False,
         n_categories=1,
@@ -247,15 +294,12 @@ def test_franke_data():
     net.fit(
         data.X_train,
         data.z_train,
-        epochs=100,
-        #  epochs=100,
+        epochs=1000,
         learning_rate=0.001,
     )
 
-    from plot import line_plot
-
     line_plot(
-        "Franke function ...",
+        "Franke data",
         [list(range(len(net.costs)))],
         [net.costs],
         ["Cost"],
@@ -273,7 +317,7 @@ def test_franke_data():
 
 if __name__ == "__main__":
     LAMBDA = 0.01
-    #  np.random.seed(42)
-    #  test_breast_cancer_data(LAMBDA)
     np.random.seed(42)
-    test_franke_data()
+    test_breast_cancer_data(LAMBDA)
+    #  np.random.seed(42)
+    #  test_franke_data()
