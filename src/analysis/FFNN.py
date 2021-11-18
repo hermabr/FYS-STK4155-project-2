@@ -1,10 +1,7 @@
 
 from config.neural_network import *
 from generate_data import FrankeData
-<<<<<<< Updated upstream
-from FFNN import FFNN
-=======
->>>>>>> Stashed changes
+
 import numpy as np
 from generate_data import BreastCancerData
 from sklearn.metrics import confusion_matrix, f1_score
@@ -17,7 +14,6 @@ import matplotlib.pyplot as plt
 def accuracy_score_numpy(Y_test, Y_pred):
     return np.sum(Y_test == Y_pred) / len(Y_test)
 
-<<<<<<< Updated upstream
 
 def test_different_hidden_layers():
     """
@@ -40,8 +36,7 @@ def test_different_hidden_layers():
     print("F1 score: ", f1_score(Y_test, Y_pred, average="weighted"))
 
 
-=======
->>>>>>> Stashed changes
+
 def main():
 
     data = BreastCancerData(test_size=0.2, scale_data=True)

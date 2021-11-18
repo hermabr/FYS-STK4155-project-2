@@ -20,8 +20,6 @@ def accuracy_score_numpy(Y_test, Y_pred):
 # epochs = 1000
 #  [10, 20, 4]
 
-
-
 data = BreastCancerData(test_size=0.2, scale_data=True)
 
 
