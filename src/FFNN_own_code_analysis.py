@@ -5,8 +5,9 @@ import numpy as np
 from generate_data import BreastCancerData
 from sklearn.metrics import confusion_matrix, f1_score
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
+
+#  import seaborn as sns
+#  import matplotlib.pyplot as plt
 from layers import LinearLayer, SigmoidLayer  # , LeakyReluLayer, ReluLayer
 
 
@@ -25,7 +26,7 @@ def accuracy_score_numpy(Y_test, Y_pred):
 data = BreastCancerData(test_size=0.2, scale_data=True)
 
 
-N = 4  # TODO: increase N in final runthroug
+N = 6  # TODO: increase N in final runthroug
 
 learning_rates = np.linspace(0.005, 0.1, N)
 lambdas = np.linspace(0.001, 0.1, N)
@@ -35,7 +36,7 @@ EPOCHS = 1000
 # lambdas = np.linspace(0.001, 2, N)
 
 number_of_hidden_layers = [1, 2, 3]
-nbr_of_hidden_nodes = [3, 4]
+nbr_of_hidden_nodes = [30, 40]
 
 dict_accuracy = {}
 dict_tn = {}
