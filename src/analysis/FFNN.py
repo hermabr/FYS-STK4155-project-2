@@ -96,7 +96,7 @@ def find_optimal_parameters(
     assert data is not None, "data must be specified"
     assert final_layer is not None, "final_layer must be specified"
 
-    EPOCHS = 1000
+    EPOCHS = 100
     search_size = 6
     learning_rates = np.linspace(0.005, 0.1, search_size)
     lambdas = [0] + list(np.linspace(0.005, 0.1, search_size))
@@ -120,7 +120,7 @@ def find_optimal_parameters(
             len(hidden_layer_sizes),
         )
     )
-
+    counter = 0
     for i, learning_rate in enumerate(learning_rates):
         for j, lambda_ in enumerate(lambdas):
             for k, hidden_layers in enumerate(number_of_hidden_layers):
@@ -176,6 +176,19 @@ def find_optimal_parameters(
                         r2 = LinearRegression.R2(data.z_test, z_tilde)
                         performance_matrices[0, i, j, k, l] = mse
                         performance_matrices[1, i, j, k, l] = r2
+
+                    counter += 1
+                    print(
+                        "Progress: {}/{}".format(
+                            counter,
+                            len(learning_rates)
+                            * len(lambdas)
+                            * len(number_of_hidden_layers)
+                            * len(hidden_layer_sizes),
+                        ),
+                        end="\r",
+                        flush=True,
+                    )
 
     for metric in metrics:
         performance_matrix = performance_matrices[metrics.index(metric)]
@@ -268,19 +281,20 @@ def evaluate_performance_best_parameters(
 
 def main():
     #  test_different_hidden_layers()
-
     print("\n" + "-" * 50)
-    print("\nFinding optimal parameters for regression with sklearn model")
+    print("\nFinding optimal parameters for regression with sklearn model", flush=True)
     data = FrankeData(20, 1, test_size=0.2)
     find_optimal_parameters(data=data, classification=False, use_sklearn=True)
 
     print("\n" + "-" * 50)
-    print("\nFinding optimal parameters for classification with sklearn model")
+    print(
+        "\nFinding optimal parameters for classification with sklearn model", flush=True
+    )
     data = BreastCancerData(test_size=0.2)
     find_optimal_parameters(data=data, classification=True, use_sklearn=True)
 
     print("\n" + "-" * 50)
-    print("\nFinding optimal parameters for regression with own model")
+    print("\nFinding optimal parameters for regression with own model", flush=True)
     data = FrankeData(20, 1, test_size=0.2)
     (
         best_learning_rate,
@@ -300,7 +314,7 @@ def main():
     )
 
     print("\n" + "-" * 50)
-    print("\nFinding optimal parameters for classification with own model")
+    print("\nFinding optimal parameters for classification with own model", flush=True)
     data = BreastCancerData(test_size=0.2)
     (
         best_learning_rate,

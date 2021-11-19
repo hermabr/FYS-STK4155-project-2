@@ -11,6 +11,30 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
 
 def find_optimal_epochs_and_minibatches(data, epochs, minibatches):
+    """Finds the optimal epochs and minibatches for SGD.
+
+    Parameters
+    ----------
+        data : FrankeData
+            The data to use for the analysis.
+        epochs : list
+            The epochs to use for the analysis.
+        minibatches : list
+            The minibatches to use for the analysis.
+
+    Returns
+    -------
+        mse_matrix : numpy.ndarray
+            The MSE matrix for the analysis.
+        min_mse : float
+            The minimum MSE for the analysis.
+        best_epoch : int
+            The best epoch for SGD.
+        best_minibatch : int
+            The best minibatch for SGD.
+        min_mse_index : tuple
+            The index of the minimum MSE.
+    """
     mse_matrix = np.zeros((len(minibatches), len(epochs)))
     r2_matrix = np.zeros((len(minibatches), len(epochs)))
 
@@ -38,7 +62,7 @@ def find_optimal_epochs_and_minibatches(data, epochs, minibatches):
     best_epoch = epochs[min_mse_index[0][1]]
 
     print(
-        f"Optimal parameters using MSE: minibatches: {best_minibatch}, epochs: {best_epoch} for OLS"
+        f"Optimal parameters using MSE: minibatches: {best_minibatch}, epochs: {best_epoch} for OLS, value: {min_mse}"
     )
 
     min_r2 = np.min(r2_matrix)
@@ -47,7 +71,7 @@ def find_optimal_epochs_and_minibatches(data, epochs, minibatches):
     best_epoch = epochs[min_r2_index[0][1]]
 
     print(
-        f"Optimal parameters using r2: minibatches: {best_minibatch}, epochs: {best_epoch} for OLS"
+        f"Optimal parameters using r2: minibatches: {best_minibatch}, epochs: {best_epoch} for OLS, value: {min_r2}"
     )
 
     return (
@@ -62,6 +86,34 @@ def find_optimal_epochs_and_minibatches(data, epochs, minibatches):
 def find_optimal_eta_and_lambda_ridge(
     data, lambdas, eta_multipliers, best_epoch, best_minibatch
 ):
+    """Finds the optimal eta and lambda for ridge.
+
+    Parameters
+    ----------
+        data : FrankeData
+            The data to use for the analysis.
+        lambdas : list
+            The lambdas to use for the analysis.
+        eta_multipliers : list
+            The eta_multipliers to use for the analysis.
+        best_epoch : int
+            The best epoch for SGD.
+        best_minibatch : int
+            The best minibatch for SGD.
+
+    Returns
+    -------
+        mse_matrix : numpy.ndarray
+            The MSE matrix for the analysis.
+        min_mse : float
+            The minimum MSE for the analysis.
+        best_lambda : float
+            The best lambda for ridge.
+        best_eta : float
+            The best eta for ridge.
+        min_mse_index : tuple
+            The index of the minimum MSE.
+    """
     mse_matrix = np.zeros((len(lambdas), len(eta_multipliers)))
     r2_matrix = np.zeros((len(lambdas), len(eta_multipliers)))
 
@@ -92,16 +144,16 @@ def find_optimal_eta_and_lambda_ridge(
     best_eta = eta_multipliers[min_mse_index[0][1]] * DEFAULT_INITIAL_ETA
 
     print(
-        f"Optimal parameters using MSE: lambda: {best_lambda}, eta: {best_eta} for Ridge"
+        f"Optimal parameters using MSE: lambda: {best_lambda}, eta: {best_eta} for Ridge, value: {min_mse}"
     )
 
     min_r2 = np.min(r2_matrix)
     min_r2_index = np.argwhere(r2_matrix == min_r2)
-    best_minibatch = minibatches[min_r2_index[0][0]]
-    best_epoch = epochs[min_r2_index[0][1]]
+    best_lambda = lambdas[min_r2_index[0][0]]
+    best_eta = eta_multipliers[min_r2_index[0][1]] * DEFAULT_INITIAL_ETA
 
     print(
-        f"Optimal parameters using r2: lambda: {best_lambda}, eta: {best_eta} for Ridge"
+        f"Optimal parameters using r2: lambda: {best_lambda}, eta: {best_eta} for Ridge, value: {min_r2}"
     )
 
     return (
@@ -162,7 +214,8 @@ def main():
     """  Plotting te MSE as function of number of epochs and number of minibatches"""
     # TODO: DO we want to plot this as a heat plot or a surface plot
     heat_plot(
-        "MSE as function of number of epochs and number of minibatches for OLS using SGD",
+        #  "MSE as function of number of epochs and number of minibatches for OLS using SGD",
+        "",
         table_values=mse_matrix,
         xticklabels=EPOCHS,
         yticklabels=MINIBATCHES,
@@ -201,13 +254,15 @@ def main():
     )
 
     heat_plot(
-        title="MSE as function of λ and η for Ridge",
+        #  title="MSE as function of λ and η for Ridge",
+        title="",
         table_values=mse_matrix_ridge,
         xticklabels=eta_multipliers,
         yticklabels=lambdas,
         x_label="η",
         y_label="λ",
         selected_idx=min_mse_index_ridge,
+        filename="MSE_for_Ridge_eta_lmb_heat.pdf",
     )
 
     """ Comparing to 5th order polynoma fit that uses explicit solution for beta using Ridge"""
@@ -219,13 +274,15 @@ def main():
 
     # TODO: Are we sure we want to plot this?
     line_plot(
-        "MSE as a function of λ for Ridge",
+        #  "MSE as a function of λ for Ridge",
+        "",
         x_datas=[lambdas],
         y_datas=[mse_values_explicit_ridge],
         data_labels=["Explicit"],
         x_label="λ",
         y_label="MSE",
         x_log=True,
+        filename="MSE_for_Ridge_explicit_lmb_line.pdf",
     )
 
     print(
