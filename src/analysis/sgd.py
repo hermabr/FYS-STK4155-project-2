@@ -12,6 +12,7 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
 def find_optimal_epochs_and_minibatches(data, epochs, minibatches):
     mse_matrix = np.zeros((len(minibatches), len(epochs)))
+    r2_matrix = np.zeros((len(minibatches), len(epochs)))
 
     for i, n_mini_batches in enumerate(minibatches):
         for j, number_of_epochs in enumerate(epochs):
@@ -26,13 +27,28 @@ def find_optimal_epochs_and_minibatches(data, epochs, minibatches):
             )
             z_tilde = ols.predict(data.X_test)
             MSE_ = ols.MSE(data.z_test, z_tilde)
+            r2 = ols.R2(data.z_test, z_tilde)
 
             mse_matrix[i, j] = MSE_
+            r2_matrix[i, j] = r2
 
     min_mse = np.min(mse_matrix)
     min_mse_index = np.argwhere(mse_matrix == min_mse)
     best_minibatch = minibatches[min_mse_index[0][0]]
     best_epoch = epochs[min_mse_index[0][1]]
+
+    print(
+        f"Optimal parameters using MSE: minibatches: {best_minibatch}, epochs: {best_epoch} for OLS"
+    )
+
+    min_r2 = np.min(r2_matrix)
+    min_r2_index = np.argwhere(r2_matrix == min_r2)
+    best_minibatch = minibatches[min_r2_index[0][0]]
+    best_epoch = epochs[min_r2_index[0][1]]
+
+    print(
+        f"Optimal parameters using r2: minibatches: {best_minibatch}, epochs: {best_epoch} for OLS"
+    )
 
     return (
         mse_matrix,
@@ -47,6 +63,7 @@ def find_optimal_eta_and_lambda_ridge(
     data, lambdas, eta_multipliers, best_epoch, best_minibatch
 ):
     mse_matrix = np.zeros((len(lambdas), len(eta_multipliers)))
+    r2_matrix = np.zeros((len(lambdas), len(eta_multipliers)))
 
     for lambda_idx, lambda_ in enumerate(lambdas):
         for eta_idx, multiplier in enumerate(eta_multipliers):
@@ -62,15 +79,30 @@ def find_optimal_eta_and_lambda_ridge(
             # TODO: find a way to extract the initial eta values into a list
             z_tilde = ridge.predict(data.X_test)
             MSE_ = ridge.MSE(data.z_test, z_tilde)
+            r2 = ridge.R2(data.z_test, z_tilde)
 
             #  MSE_for_different_lambdas_Ridge[lambda_] = MSE_
             #  initial_eta = DEFAULT_ETA * multiplier
             mse_matrix[lambda_idx, eta_idx] = MSE_
+            r2_matrix[lambda_idx, eta_idx] = r2
 
     min_mse = np.min(mse_matrix)
     min_mse_index = np.argwhere(mse_matrix == min_mse)
     best_lambda = lambdas[min_mse_index[0][0]]
     best_eta = eta_multipliers[min_mse_index[0][1]] * DEFAULT_INITIAL_ETA
+
+    print(
+        f"Optimal parameters using MSE: lambda: {best_lambda}, eta: {best_eta} for Ridge"
+    )
+
+    min_r2 = np.min(r2_matrix)
+    min_r2_index = np.argwhere(r2_matrix == min_r2)
+    best_minibatch = minibatches[min_r2_index[0][0]]
+    best_epoch = epochs[min_r2_index[0][1]]
+
+    print(
+        f"Optimal parameters using r2: lambda: {best_lambda}, eta: {best_eta} for Ridge"
+    )
 
     return (
         mse_matrix,
@@ -138,16 +170,6 @@ def main():
         y_label="Minibatch",
         selected_idx=min_mse_index,
         filename="MSE_for_OLS_ta_lmb_heat.pdf",
-    )
-    mesh_epochs, mesh_minibatches = np.meshgrid(EPOCHS, MINIBATCHES)
-    surface_plot(
-        title="MSE as function of number of epochs and number of minibatches for OLS using SGD",
-        x=mesh_epochs,
-        y=mesh_minibatches,
-        z=mse_matrix,
-        xlabel="epoch",
-        ylabel="minibatch",
-        zlabel="MSE",
     )
 
     print(
