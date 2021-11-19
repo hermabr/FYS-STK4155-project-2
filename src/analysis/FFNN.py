@@ -97,12 +97,12 @@ def find_optimal_parameters(
     assert final_layer is not None, "final_layer must be specified"
 
     EPOCHS = 1000
-    search_size = 4
+    search_size = 6
     learning_rates = np.linspace(0.005, 0.1, search_size)
     lambdas = [0] + list(np.linspace(0.005, 0.1, search_size))
 
     number_of_hidden_layers = [1, 2, 3]
-    hidden_layer_sizes = [10, 25, 40]
+    hidden_layer_sizes = [30, 40]
 
     if classification:
         metrics = ["accuracy", "f1", "ppv", "npv"]
@@ -207,6 +207,7 @@ def find_optimal_parameters(
                     end=", ",
                 )
         print("\n")
+        print("Entire best matrix indices:", best_metric_performance_index )
 
     performance_matrix = performance_matrices[metrics.index(main_metric)]
     if classification:
@@ -292,7 +293,7 @@ def main():
         best_hidden_layer_size,
         data,
         classification=False,
-        filename=f"franke_function_learning_rate={learning_rate}_lambda={lambda_}_hidden_layers={number_of_hidden_layers}_hidden_layer_size={hidden_layer_size}_cost.png",
+        filename=f"franke_function_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.png",
     )
 
     print("\nFinding optimal parameters for classification with own model")
@@ -311,7 +312,7 @@ def main():
         best_hidden_layer_size,
         data,
         classification=True,
-        filename=f"breast_cancer_learning_rate={learning_rate}_lambda={lambda_}_hidden_layers={number_of_hidden_layers}_hidden_layer_size={hidden_layer_size}_cost.png",
+        filename=f"breast_cancer_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.png"
     )
 
     #  exit()
