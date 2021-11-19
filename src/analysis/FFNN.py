@@ -255,6 +255,7 @@ def evaluate_performance_best_parameters(
         ["Cost"],
         "epoch",
         "cost",
+        show=False,
         filename=filename,
     )
 

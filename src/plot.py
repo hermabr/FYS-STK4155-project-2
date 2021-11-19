@@ -104,6 +104,7 @@ def heat_plot(
     x_label,
     y_label,
     selected_idx=None,
+    show=True,
     filename="",
 ):
     """Plots the heat plot
@@ -124,6 +125,8 @@ def heat_plot(
             The label for the y-axis
         selected_idx : tuple[int, int]
             The index for which to give an extra mark
+        show : bool
+            Whether to show the plot
         filename : str/None
             The filename for which to save the plot, does not save if None
     """
@@ -142,7 +145,8 @@ def heat_plot(
     plt.ylabel(y_label)
     if filename:
         plt.savefig(f"output/{filename.replace(' ', '_')}")
-    plt.show()
+    if show:
+        plt.show()
 
 
 def line_plot(
