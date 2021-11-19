@@ -281,27 +281,32 @@ def evaluate_performance_best_parameters(
 
 def main():
     #  test_different_hidden_layers()
-    print("\n" + "-" * 50)
-    print("\nFinding optimal parameters for regression with sklearn model", flush=True)
-    data = FrankeData(20, 1, test_size=0.2)
-    find_optimal_parameters(data=data, classification=False, use_sklearn=True)
+    #  print("\n" + "-" * 50)
+    #  print("\nFinding optimal parameters for regression with sklearn model", flush=True)
+    #  data = FrankeData(20, 1, test_size=0.2)
+    #  find_optimal_parameters(data=data, classification=False, use_sklearn=True)
+    #
+    #  print("\n" + "-" * 50)
+    #  print(
+    #      "\nFinding optimal parameters for classification with sklearn model", flush=True
+    #  )
+    #  data = BreastCancerData(test_size=0.2)
+    #  find_optimal_parameters(data=data, classification=True, use_sklearn=True)
 
-    print("\n" + "-" * 50)
-    print(
-        "\nFinding optimal parameters for classification with sklearn model", flush=True
-    )
-    data = BreastCancerData(test_size=0.2)
-    find_optimal_parameters(data=data, classification=True, use_sklearn=True)
-
-    print("\n" + "-" * 50)
-    print("\nFinding optimal parameters for regression with own model", flush=True)
+    #  print("\n" + "-" * 50)
+    #  print("\nFinding optimal parameters for regression with own model", flush=True)
     data = FrankeData(20, 1, test_size=0.2)
-    (
-        best_learning_rate,
-        best_lambda,
-        best_number_of_hidden_layers,
-        best_hidden_layer_size,
-    ) = find_optimal_parameters(data=data, classification=False)
+    #  (
+    #      best_learning_rate,
+    #      best_lambda,
+    #      best_number_of_hidden_layers,
+    #      best_hidden_layer_size,
+    #  ) = find_optimal_parameters(data=data, classification=False)
+
+    best_learning_rate = 0.043
+    best_lambda = 0
+    best_number_of_hidden_layers = 2
+    best_hidden_layer_size = 30
 
     evaluate_performance_best_parameters(
         best_learning_rate,
@@ -310,7 +315,7 @@ def main():
         best_hidden_layer_size,
         data,
         classification=False,
-        filename=f"franke_function_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.png",
+        filename=f"franke_function_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.pdf",
     )
 
     print("\n" + "-" * 50)
@@ -330,7 +335,7 @@ def main():
         best_hidden_layer_size,
         data,
         classification=True,
-        filename=f"breast_cancer_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.png",
+        filename=f"breast_cancer_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.pdf",
     )
 
     #  exit()
