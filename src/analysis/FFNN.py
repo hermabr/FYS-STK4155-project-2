@@ -270,108 +270,82 @@ def test_different_hidden_layers(
             print("R2: ", LinearRegression.R2(data.z_test, z_tilde))
 
 
-#  def test_different_hidden_layers_regression():
-#      data = FrankeData(20, 1, test_size=0.2)
-#
-#      for layer in [SigmoidLayer, LinearLayer, LeakyReluLayer, ReluLayer]:
-#          print(layer.__name__)
-#          net = FFNN(
-#              data.X_train.shape[1],
-#              (10, 20, 4),
-#              hidden_layers=layer,
-#              final_layer=LinearLayer,
-#              classification=False,
-#              n_categories=1,
-#          )
-#
-#          net.fit(
-#              data.X_train,
-#              data.z_train,
-#              epochs=1000,
-#              #  epochs=100,
-#              learning_rate=0.001,
-#          )
-#
-#          # Evaluate
-#          z_tilde = net.predict(data.X_test)
-#          mse = np.mean((z_tilde - data.z_test) ** 2)
-#          print("MSE:", mse)
-
-
 def main():
-    #  print("\n" + "-" * 50)
-    #  print("\nFinding optimal parameters for regression with sklearn model", flush=True)
-    #  data = FrankeData(20, 1, test_size=0.2)
-    #  find_optimal_parameters(data=data, classification=False, use_sklearn=True)
-    #
-    #  print("\n" + "-" * 50)
-    #  print(
-    #      "\nFinding optimal parameters for classification with sklearn model", flush=True
-    #  )
-    #  data = BreastCancerData(test_size=0.2)
-    #  find_optimal_parameters(data=data, classification=True, use_sklearn=True)
-    #
-    #  np.random.seed(42)
-    #
-    #  print("\n" + "-" * 50)
-    #  print("\nFinding optimal parameters for regression with own model", flush=True)
-    #  data = FrankeData(20, 1, test_size=0.2)
-    #  (
-    #      best_learning_rate,
-    #      best_lambda,
-    #      best_number_of_hidden_layers,
-    #      best_hidden_layer_size,
-    #  ) = find_optimal_parameters(data=data, classification=False)
-    #
-    #  evaluate_performance_best_parameters(
-    #      best_learning_rate,
-    #      best_lambda,
-    #      best_number_of_hidden_layers,
-    #      best_hidden_layer_size,
-    #      data,
-    #      classification=False,
-    #      filename=f"franke_function_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.pdf",
-    #  )
 
-    best_learning_rate = 0.001
-    best_lambda = 0.001
-    best_number_of_hidden_layers = 3
-    best_hidden_layer_size = 10
+    print("\n" + "-" * 50)
+    print("\nFinding optimal parameters for regression with sklearn model", flush=True)
+    data = FrankeData(20, 1, test_size=0.2)
+    find_optimal_parameters(data=data, classification=False, use_sklearn=True)
+
+    print("\n" + "-" * 50)
+    print(
+        "\nFinding optimal parameters for classification with sklearn model", flush=True
+    )
+    data = BreastCancerData(test_size=0.2)
+    find_optimal_parameters(data=data, classification=True, use_sklearn=True)
+
+    np.random.seed(42)
+
+    print("\n" + "-" * 50)
+    print("\nFinding optimal parameters for regression with own model", flush=True)
+    data = FrankeData(20, 1, test_size=0.2)
+    (
+        best_learning_rate,
+        best_lambda,
+        best_number_of_hidden_layers,
+        best_hidden_layer_size,
+    ) = find_optimal_parameters(data=data, classification=False)
+
+    evaluate_performance_best_parameters(
+        best_learning_rate,
+        best_lambda,
+        best_number_of_hidden_layers,
+        best_hidden_layer_size,
+        data,
+        classification=False,
+        filename=f"franke_function_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.pdf",
+    )
 
     test_different_hidden_layers(
         best_learning_rate,
         best_lambda,
         best_number_of_hidden_layers,
         best_hidden_layer_size,
-        classification=False,
+        classification=True,
     )
 
-    #  np.random.seed(42)
-    #
-    #  print("\n" + "-" * 50)
-    #  print("\nFinding optimal parameters for classification with own model", flush=True)
-    #  data = BreastCancerData(test_size=0.2)
-    #  (
-    #      best_learning_rate,
-    #      best_lambda,
-    #      best_number_of_hidden_layers,
-    #      best_hidden_layer_size,
-    #  ) = find_optimal_parameters(data=data, classification=True)
-    #
-    #  evaluate_performance_best_parameters(
-    #      best_learning_rate,
-    #      best_lambda,
-    #      best_number_of_hidden_layers,
-    #      best_hidden_layer_size,
-    #      data,
-    #      classification=True,
-    #      filename=f"breast_cancer_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.pdf",
-    #  )
-    #
-    #  test_different_hidden_layers(
-    #      best_learning_rate,
-    #      best_lambda,
-    #      best_number_of_hidden_layers,
-    #      best_hidden_layer_size,
-    #      classification=True,
-    #  )
+    np.random.seed(42)
+
+    print("\n" + "-" * 50)
+    print("\nFinding optimal parameters for classification with own model", flush=True)
+    data = BreastCancerData(test_size=0.2)
+    (
+        best_learning_rate,
+        best_lambda,
+        best_number_of_hidden_layers,
+        best_hidden_layer_size,
+    ) = find_optimal_parameters(data=data, classification=True)
+
+    data = BreastCancerData(test_size=0.2)
+    best_learning_rate = 0.001
+    best_lambda = 0.001
+    best_number_of_hidden_layers = 3
+    best_hidden_layer_size = 10
+
+    evaluate_performance_best_parameters(
+        best_learning_rate,
+        best_lambda,
+        best_number_of_hidden_layers,
+        best_hidden_layer_size,
+        data,
+        classification=True,
+        filename=f"breast_cancer_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.pdf",
+    )
+
+    test_different_hidden_layers(
+        best_learning_rate,
+        best_lambda,
+        best_number_of_hidden_layers,
+        best_hidden_layer_size,
+        classification=True,
+    )

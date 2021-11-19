@@ -15,13 +15,13 @@ N_MINI_BATCH_START = 2
 N_MINI_BATCH_END = 120
 N_MINI_BATCH_STEP_SIZE = 30  # TODO: maybe 16
 
-NUMBER_OF_ETAS = 10  # TODO: increase for real run
+NUMBER_OF_ETAS = 4  # TODO: increase for real run
 #  SMALLEST_ETA = 0.001
 SMALLEST_ETA = 0.1
 LARGEST_ETA = 3
 
-NUMBER_OF_LAMBDAS = 10
-SMALLEST_LAMBDA = -5
+NUMBER_OF_LAMBDAS = 4
+SMALLEST_LAMBDA = -7
 LARGEST_LAMBDA = -1
 
 # TODO: Increase this before the final plotting result

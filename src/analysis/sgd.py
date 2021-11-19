@@ -147,7 +147,7 @@ def find_optimal_eta_and_lambda_ridge(
         f"Optimal parameters using MSE: lambda: {best_lambda}, eta: {best_eta} for Ridge, value: {min_mse}"
     )
 
-    min_r2 = np.min(r2_matrix)
+    min_r2 = np.max(r2_matrix)
     min_r2_index = np.argwhere(r2_matrix == min_r2)
     best_lambda = lambdas[min_r2_index[0][0]]
     best_eta = eta_multipliers[min_r2_index[0][1]] * DEFAULT_INITIAL_ETA

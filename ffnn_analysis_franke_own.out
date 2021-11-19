@@ -1,0 +1,10 @@
+Best for mse: 0.019373047067396596. Parameters: learning rate: 0.005, lambda: 0, hidden layers: 2, hidden layer size: 30
+Performance for other metrics: r2: 0.37812503617304394, 
+
+Entire best matrix indices: [[0 0 1 0]]
+Best for r2: 0.37812503617304394. Parameters: learning rate: 0.005, lambda: 0, hidden layers: 2, hidden layer size: 30
+Performance for other metrics: mse: 0.019373047067396596, 
+
+Entire best matrix indices: [[0 0 1 0]]
+0.020814784146285136
+0.3318452645572164
