@@ -207,7 +207,7 @@ def find_optimal_parameters(
                     end=", ",
                 )
         print("\n")
-        print("Entire best matrix indices:", best_metric_performance_index )
+        print("Entire best matrix indices:", best_metric_performance_index)
 
     performance_matrix = performance_matrices[metrics.index(main_metric)]
     if classification:
@@ -269,14 +269,17 @@ def evaluate_performance_best_parameters(
 def main():
     #  test_different_hidden_layers()
 
+    print("\n" + "-" * 50)
     print("\nFinding optimal parameters for regression with sklearn model")
     data = FrankeData(20, 1, test_size=0.2)
     find_optimal_parameters(data=data, classification=False, use_sklearn=True)
 
+    print("\n" + "-" * 50)
     print("\nFinding optimal parameters for classification with sklearn model")
     data = BreastCancerData(test_size=0.2)
     find_optimal_parameters(data=data, classification=True, use_sklearn=True)
 
+    print("\n" + "-" * 50)
     print("\nFinding optimal parameters for regression with own model")
     data = FrankeData(20, 1, test_size=0.2)
     (
@@ -296,6 +299,7 @@ def main():
         filename=f"franke_function_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.png",
     )
 
+    print("\n" + "-" * 50)
     print("\nFinding optimal parameters for classification with own model")
     data = BreastCancerData(test_size=0.2)
     (
@@ -312,7 +316,7 @@ def main():
         best_hidden_layer_size,
         data,
         classification=True,
-        filename=f"breast_cancer_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.png"
+        filename=f"breast_cancer_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.png",
     )
 
     #  exit()
