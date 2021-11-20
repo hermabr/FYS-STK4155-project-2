@@ -159,6 +159,7 @@ def line_plot(
     x_log=False,
     y_log=False,
     filename="",
+    show=True,
 ):
     """Plots a line plot
 
@@ -190,4 +191,5 @@ def line_plot(
         plt.yscale("log")
     if filename:
         plt.savefig(f"output/{filename.replace(' ', '_')}")
-    plt.show()
+    if show:
+        plt.show()

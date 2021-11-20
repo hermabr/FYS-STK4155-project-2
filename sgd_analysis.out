@@ -1,0 +1,8 @@
+Optimal parameters using MSE: minibatches: 32, epochs: 60 for OLS, value: 0.01581326335586871
+Optimal parameters using r2: minibatches: 2, epochs: 60 for OLS, value: -63.908894052331505
+With SGD we found the minimal MSE = 0.01581326335586871, found for number of epochs = 60 and number of minibatches = 2
+MSE for 5th order polynom using explicit expression for beta from OLS = 0.009083458659267386
+Optimal parameters using MSE: lambda: 0.1, eta: 0.10666666666666667 for Ridge, value: 0.03852167674674993
+Optimal parameters using r2: lambda: 0.1, eta: 0.10666666666666667 for Ridge, value: -0.21903928081281188
+With SGD we found the minimal MSE = 0.03852167674674993, for lambda = 0.1 and initial eta = 0.10666666666666667
+Using Ridge with explicit beta and lambda = 1e-07 we got MSE = 0.009083676473627109
