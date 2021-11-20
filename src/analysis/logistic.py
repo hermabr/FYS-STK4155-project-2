@@ -3,8 +3,6 @@ from generate_data import BreastCancerData
 
 from logistic_regression import LogisticRegression
 from sklearn.linear_model import LogisticRegression as SklearnLogisticRegression
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.preprocessing import StandardScaler
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -34,13 +32,8 @@ def main():
     dict_specificity = {}
     dict_F1_score = {}
 
-    # learning_rates = np.linspace(0.001, 10, N) #TODO: as the code is now we need this range, but isn't it a bit too big? Something wrong? Ask professor!
-    # lambdas = np.linspace(0.001, 2, N)
-
     learning_rates = np.logspace(-4, 2, N)
     lambdas = np.logspace(-4, 4, N)
-    # learning_rates = np.linspace(0.005, 0.1, N)
-    # lambdas = np.linspace(0.001, 0.1, N)
 
     np.random.seed(42)
 
@@ -57,17 +50,12 @@ def main():
             )
 
             prediction_log_reg = logistic.predict(data.X_test) < 0.5
-            # print(f'prediction_log_reg = {prediction_log_reg}')
 
             true_output = data.z_test < 0.5
-            # print(f'true_output = {true_output}')
 
             accuracy = accuracy_score_numpy(true_output, prediction_log_reg)
             score = np.mean(prediction_log_reg == true_output)
             dict_accuracy[(learning_rate, lmb)] = score
-
-            # z_pred = logistic.predict(data.z_test)
-            # print(f'z_pred = {z_pred}')
 
             tn_fp, fn_tp = confusion_matrix(true_output, prediction_log_reg)
             tn, fp = tn_fp

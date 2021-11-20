@@ -5,9 +5,6 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
-# TODO: Scale these correctly
-#  plt.rcParams.update({"font.size": 12, "figure.dpi": 300, "figure.figsize": (4.7747, 5)})
-
 sns.set()
 
 

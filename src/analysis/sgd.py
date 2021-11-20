@@ -1,13 +1,11 @@
 import numpy as np
 
-from plot import surface_plot, heat_plot, line_plot
+from plot import heat_plot, line_plot
 from config import *
 from config.linear_regression import *
 from ridge import Ridge
 from generate_data import FrankeData
 from ordinary_least_squares import OrdinaryLeastSquares
-from matplotlib import cm
-from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
 
 def find_optimal_epochs_and_minibatches(data, epochs, minibatches):
@@ -47,7 +45,6 @@ def find_optimal_epochs_and_minibatches(data, epochs, minibatches):
                 number_of_epochs,
                 n_mini_batches,
                 tol=10e-7,
-                #  learning_multiplier=eta_multiplier,
             )
             z_tilde = ols.predict(data.X_test)
             MSE_ = ols.MSE(data.z_test, z_tilde)
@@ -60,11 +57,6 @@ def find_optimal_epochs_and_minibatches(data, epochs, minibatches):
     min_mse_index = np.argwhere(mse_matrix == min_mse)
     best_minibatch = minibatches[min_mse_index[0][0]]
     best_epoch = epochs[min_mse_index[0][1]]
-
-    #  print(
-    #      f"Optimal parameters using MSE: minibatches: {best_minibatch}, epochs: {best_epoch} for OLS, value: {min_mse}"
-    #  )
-
     min_r2 = np.max(r2_matrix)
     min_r2_index = np.argwhere(r2_matrix == min_r2)
     best_minibatch = minibatches[min_r2_index[0][0]]
@@ -128,13 +120,9 @@ def find_optimal_eta_and_lambda_ridge(
                 tol=10e-7,
                 learning_multiplier=multiplier,
             )
-            # TODO: find a way to extract the initial eta values into a list
             z_tilde = ridge.predict(data.X_test)
             MSE_ = ridge.MSE(data.z_test, z_tilde)
             r2 = ridge.R2(data.z_test, z_tilde)
-
-            #  MSE_for_different_lambdas_Ridge[lambda_] = MSE_
-            #  initial_eta = DEFAULT_ETA * multiplier
             mse_matrix[lambda_idx, eta_idx] = MSE_
             r2_matrix[lambda_idx, eta_idx] = r2
 
@@ -142,10 +130,6 @@ def find_optimal_eta_and_lambda_ridge(
     min_mse_index = np.argwhere(mse_matrix == min_mse)
     best_lambda = lambdas[min_mse_index[0][0]]
     best_eta = eta_multipliers[min_mse_index[0][1]] * DEFAULT_INITIAL_ETA
-
-    #  print(
-    #      f"Optimal parameters using MSE: lambda: {best_lambda}, eta: {best_eta} for Ridge, value: {min_mse}"
-    #  )
 
     min_r2 = np.max(r2_matrix)
     min_r2_index = np.argwhere(r2_matrix == min_r2)
@@ -166,6 +150,20 @@ def find_optimal_eta_and_lambda_ridge(
 
 
 def find_ols_mse_r2(data):
+    """Finds the MSE and R2 for OLS.
+
+    Parameters
+    ----------
+        data : Data
+            The data to use for the analysis.
+
+    Returns
+    -------
+        mse : float
+            The MSE for the analysis.
+        r2 : float
+            The R2 for the analysis.
+    """
     ols = OrdinaryLeastSquares(ANALYSIS_DEGREE)
 
     ols.fit(data.X_train, data.z_train)
@@ -175,6 +173,22 @@ def find_ols_mse_r2(data):
 
 
 def find_ridge_mse_r2(data, lambdas):
+    """Finds the MSE and R2 for Ridge.
+
+    Parameters
+    ----------
+        data : Data
+            The data to use for the analysis.
+        lambdas : list
+            The lambdas to use for the analysis.
+
+    Returns
+    -------
+        mse : float
+            The MSE for the analysis.
+        r2 : float
+            The R2 for the analysis.
+    """
     best_lambda = (0, -1, 0)
     mse_values = []
 
@@ -190,14 +204,19 @@ def find_ridge_mse_r2(data, lambdas):
         if mse < best_lambda[0] or best_lambda[1] == -1:
             r2 = ridge.R2(z_tilde, data.z_test)
             best_lambda = (mse, lambda_, r2)
-        #  MSE_for_different_lambdas.append(MSE_ridge_for_lambda)
-        #  MSE_for_different_lambdas_dict[lambda_] = MSE_ridge_for_lambda
         mse_values.append(mse)
 
     return mse_values, best_lambda[0], best_lambda[1], best_lambda[2]
 
 
 def analytical_performance(data):
+    """Finds the analytical performance for OLS and Ridge.
+
+    Parameters
+    ----------
+        data : Data
+            The data to use for the analysis.
+    """
     ols = OrdinaryLeastSquares(7)
     ols.fit(data.X_train, data.z_train)
     z_tilde = ols.predict(data.X_test)
@@ -260,10 +279,6 @@ def main():
     ) = find_optimal_eta_and_lambda_ridge(
         data, lambdas, eta_multipliers, best_epoch, best_minibatch
     )
-
-    #  print(
-    #      f"With SGD we found the minimal MSE = {min_mse_ridge}, for lambda = {best_lambda} and initial eta = {best_eta}"
-    #  )
 
     heat_plot(
         #  title="MSE as function of λ and η for Ridge",

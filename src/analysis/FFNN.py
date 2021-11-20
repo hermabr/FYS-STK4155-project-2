@@ -9,19 +9,8 @@ from sklearn.metrics import confusion_matrix, f1_score
 from sklearn.neural_network import MLPClassifier, MLPRegressor
 
 
-"""Accuracy score function for evaluating performance"""
-
-
 def accuracy_score_numpy(Y_test, Y_pred):
     return np.sum(Y_test == Y_pred) / len(Y_test)
-
-
-#  def test_different_hidden_layers():
-#      """
-#      Test different hidden layers (for regression)
-#      """
-#      test_different_hidden_layers_classification()
-#      test_different_hidden_layers_regression()
 
 
 def find_optimal_parameters(
@@ -31,6 +20,32 @@ def find_optimal_parameters(
     final_layer=LinearLayer,
     use_sklearn=False,
 ):
+    """Finds the optimal parameters for the FFNN.
+
+    Parameters
+    ----------
+        data : FrankeData or BreastCancerData
+            The data to use for the FFNN.
+        classification : bool
+            Whether the FFNN should be used for classification or regression.
+        hidden_layers : list of layers
+            The hidden layers to use for the FFNN.
+        final_layer : layer
+            The final layer to use for the FFNN.
+        use_sklearn : bool
+            Whether to use sklearn or not.
+
+    Returns
+    -------
+        learning_rate : float
+            The optimal learning rate.
+        lambda_ : float
+            The optimal lambda.
+        number_of_hidden_layers : int
+            The optimal number of hidden layers.
+        hidden_layer_size : int
+            The optimal hidden layer size.
+    """
     assert classification is not None, "classification must be specified"
     assert data is not None, "data must be specified"
     assert final_layer is not None, "final_layer must be specified"
@@ -190,6 +205,25 @@ def evaluate_performance_best_parameters(
     classification,
     filename,
 ):
+    """Evaluates performance of the best parameters
+
+    Parameters
+    ----------
+        learning_rate : float
+            Learning rate for the neural network.
+        lambda_ : float
+            Regularization parameter for the neural network.
+        number_of_hidden_layers : int
+            Number of hidden layers in the neural network.
+        hidden_layer_size : int
+            Size of the hidden layers in the neural network.
+        data : Data
+            Data object containing the training and test data.
+        classification : bool
+            Whether the neural network is a classification or regression model.
+        filename : str
+            Name of the file to save the results to.
+    """
     net = FFNN(
         data.X_train.shape[1],
         [hidden_layer_size] * number_of_hidden_layers,
@@ -223,13 +257,23 @@ def evaluate_performance_best_parameters(
 
 
 def test_different_hidden_layers(
-    learning_rate,
-    lambda_,
-    number_of_hidden_layers,
-    hidden_layer_size,
-    classification,
+    learning_rate, lambda_, number_of_hidden_layers, hidden_layer_size, classification
 ):
-    # Create data for regression
+    """Tests different hidden layers for the best parameters
+
+    Parameters
+    ----------
+        learning_rate : float
+            Learning rate for the neural network.
+        lambda_ : float
+            Regularization parameter for the neural network.
+        number_of_hidden_layers : int
+            Number of hidden layers in the neural network.
+        hidden_layer_size : int
+            Size of the hidden layers in the neural network.
+        classification : bool
+            Whether the neural network is a classification or regression model.
+    """
     if classification:
         data = BreastCancerData(test_size=0.2)
     else:
@@ -266,6 +310,7 @@ def test_different_hidden_layers(
 
 
 def test_different_actication_functions_custom_values():
+    """Tests different activation functions for the custom parameters"""
     print("\n" + "-" * 50)
     print("Custom parameters regression different activation functions")
 
@@ -351,3 +396,7 @@ def main():
     )
 
     test_different_actication_functions_custom_values()
+
+
+if __name__ == "__main__":
+    main()

@@ -1,9 +1,7 @@
 import numpy as np
-from linear_regression_models import LinearRegression
-from generate_data import BreastCancerData
 
 
-class LogisticRegression(LinearRegression):
+class LogisticRegression:
     def __init__(self):
         pass
 
@@ -125,29 +123,3 @@ class LogisticRegression(LinearRegression):
 
         """
         return LogisticRegression.sigmoid(np.dot(X, theta))
-
-
-if __name__ == "__main__":
-    np.random.seed(42)
-    N = 11
-
-    data = BreastCancerData(test_size=0.2, scale_data=True)
-    logistic = LogisticRegression()
-
-    result_matrix = np.zeros((N, N))
-    for i, alpha in enumerate(np.linspace(0.001, 0.1, N)):
-        for j, lambda_ in enumerate(np.linspace(0.001, 1, N)):
-            logistic.fit(
-                data.X_train,
-                data.z_train,
-                alpha=alpha,
-                iterations=10_000,
-                lambda_=lambda_,
-            )
-            a = logistic.predict(data.X_train) < 0.5
-            b = data.z_train < 0.5
-            score = np.mean(a == b)
-            print(score, alpha, lambda_)
-            result_matrix[i, j] = score
-
-    print(result_matrix)
