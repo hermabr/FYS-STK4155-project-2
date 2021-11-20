@@ -303,17 +303,17 @@ Entire best matrix indices: [[0 0 1 0]]
 0.020814784146285212
 0.3318452645572141
 SigmoidLayer
-Accuracy score:  0.9824561403508771
-F1 score:  0.9824561403508771
+MSE:  0.01874850194415618
+R2:  0.3103348926411049
 LinearLayer
-Accuracy score:  0.3508771929824561
-F1 score:  0.1822738664843928
+MSE:  nan
+R2:  nan
 LeakyReluLayer
-Accuracy score:  0.9649122807017544
-F1 score:  0.9649122807017544
+MSE:  nan
+R2:  nan
 ReluLayer
-Accuracy score:  0.9649122807017544
-F1 score:  0.9650998528730782
+MSE:  nan
+R2:  nan
 
 --------------------------------------------------
 
@@ -571,3 +571,19 @@ F1 score:  0.9734494676926793
 ReluLayer
 Accuracy score:  0.9736842105263158
 F1 score:  0.9734494676926793
+
+--------------------------------------------------
+
+Custom parameters regression different activation functions
+SigmoidLayer
+MSE:  0.026712181146185416
+R2:  0.017390331619726918
+LinearLayer
+MSE:  0.013533313851500816
+R2:  0.5021759936811312
+LeakyReluLayer
+MSE:  0.01137379908994919
+R2:  0.5816139127375303
+ReluLayer
+MSE:  nan
+R2:  nan

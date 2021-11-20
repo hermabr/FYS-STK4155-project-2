@@ -61,17 +61,17 @@ def find_optimal_epochs_and_minibatches(data, epochs, minibatches):
     best_minibatch = minibatches[min_mse_index[0][0]]
     best_epoch = epochs[min_mse_index[0][1]]
 
-    print(
-        f"Optimal parameters using MSE: minibatches: {best_minibatch}, epochs: {best_epoch} for OLS, value: {min_mse}"
-    )
+    #  print(
+    #      f"Optimal parameters using MSE: minibatches: {best_minibatch}, epochs: {best_epoch} for OLS, value: {min_mse}"
+    #  )
 
-    min_r2 = np.min(r2_matrix)
+    min_r2 = np.max(r2_matrix)
     min_r2_index = np.argwhere(r2_matrix == min_r2)
     best_minibatch = minibatches[min_r2_index[0][0]]
     best_epoch = epochs[min_r2_index[0][1]]
 
     print(
-        f"Optimal parameters using r2: minibatches: {best_minibatch}, epochs: {best_epoch} for OLS, value: {min_r2}"
+        f"Optimal parameters using ols: minibatches: {best_minibatch}, epochs: {best_epoch} for OLS, mse: {min_mse}, r2: {min_r2}"
     )
 
     return (
@@ -143,9 +143,9 @@ def find_optimal_eta_and_lambda_ridge(
     best_lambda = lambdas[min_mse_index[0][0]]
     best_eta = eta_multipliers[min_mse_index[0][1]] * DEFAULT_INITIAL_ETA
 
-    print(
-        f"Optimal parameters using MSE: lambda: {best_lambda}, eta: {best_eta} for Ridge, value: {min_mse}"
-    )
+    #  print(
+    #      f"Optimal parameters using MSE: lambda: {best_lambda}, eta: {best_eta} for Ridge, value: {min_mse}"
+    #  )
 
     min_r2 = np.max(r2_matrix)
     min_r2_index = np.argwhere(r2_matrix == min_r2)
@@ -153,7 +153,7 @@ def find_optimal_eta_and_lambda_ridge(
     best_eta = eta_multipliers[min_r2_index[0][1]] * DEFAULT_INITIAL_ETA
 
     print(
-        f"Optimal parameters using r2: lambda: {best_lambda}, eta: {best_eta} for Ridge, value: {min_r2}"
+        f"Optimal parameters using ridge: lambda: {best_lambda}, eta: {best_eta} for Ridge, mse: {min_mse}, r2: {min_r2}"
     )
 
     return (
@@ -165,23 +165,22 @@ def find_optimal_eta_and_lambda_ridge(
     )
 
 
-def find_ols_mse(data):
+def find_ols_mse_r2(data):
     ols = OrdinaryLeastSquares(ANALYSIS_DEGREE)
 
     ols.fit(data.X_train, data.z_train)
     z_tilde = ols.predict(data.X_test)
 
-    return ols.MSE(data.z_test, z_tilde)
+    return ols.MSE(data.z_test, z_tilde), ols.R2(data.z_test, z_tilde)
 
 
-def find_ridge_mse(data, lambdas):
-    best_lambda = (0, -1)
+def find_ridge_mse_r2(data, lambdas):
+    best_lambda = (0, -1, 0)
     mse_values = []
 
     for lambda_ in lambdas:
-        ridge = Ridge(
-            ANALYSIS_DEGREE, lambda_
-        )  # choosing 5ht degree polynoma to fit the franke function
+        # choosing 5ht degree polynoma to fit the franke function
+        ridge = Ridge(ANALYSIS_DEGREE, lambda_)
 
         ridge.fit(data.X_train, data.z_train)
         z_tilde = ridge.predict(data.X_test)
@@ -189,18 +188,42 @@ def find_ridge_mse(data, lambdas):
         mse = ridge.MSE(z_tilde, data.z_test)
 
         if mse < best_lambda[0] or best_lambda[1] == -1:
-            best_lambda = (mse, lambda_)
+            r2 = ridge.R2(z_tilde, data.z_test)
+            best_lambda = (mse, lambda_, r2)
         #  MSE_for_different_lambdas.append(MSE_ridge_for_lambda)
         #  MSE_for_different_lambdas_dict[lambda_] = MSE_ridge_for_lambda
         mse_values.append(mse)
 
-    return mse_values, best_lambda[0], best_lambda[1]
+    return mse_values, best_lambda[0], best_lambda[1], best_lambda[2]
+
+
+def analytical_performance(data):
+    ols = OrdinaryLeastSquares(7)
+    ols.fit(data.X_train, data.z_train)
+    z_tilde = ols.predict(data.X_test)
+    MSE_ols = ols.MSE(data.z_test, z_tilde)
+    R2_ols = ols.R2(data.z_test, z_tilde)
+    print("Analytical performance MSE:", MSE_ols, R2_ols)
+
+    ridge = Ridge(7, 1e-13)
+    ridge.fit(data.X_train, data.z_train)
+    z_tilde = ridge.predict(data.X_test)
+    MSE_ridge = ridge.MSE(data.z_test, z_tilde)
+    R2_ridge = ridge.R2(data.z_test, z_tilde)
+    print("Analytical performance ridge:", MSE_ridge, R2_ridge)
 
 
 def main():
     """creating data"""
     np.random.seed(4)
     data = FrankeData(ANALYSIS_DATA_SIZE, ANALYSIS_DEGREE, test_size=ANALYSIS_TEST_SIZE)
+
+    #  analytical_performance(data)
+    """ Comparing to 5th order polynoma fit that uses explicit solution for beta using OLS"""
+    ols_mse_value, ols_r2_value = find_ols_mse_r2(data)
+    print(
+        f"MSE for 5th order polynom using explicit expression for beta from OLS = {ols_mse_value}, R2 = {ols_r2_value}"
+    )
 
     """ making a dictionary for MSE calculated with SGD for OLS. The key is a tuple (number_of_epochs, number_of_minibatches), value is the MSE for that choice"""
     (
@@ -212,7 +235,6 @@ def main():
     ) = find_optimal_epochs_and_minibatches(data, EPOCHS, MINIBATCHES)
 
     """  Plotting te MSE as function of number of epochs and number of minibatches"""
-    # TODO: DO we want to plot this as a heat plot or a surface plot
     heat_plot(
         #  "MSE as function of number of epochs and number of minibatches for OLS using SGD",
         "",
@@ -223,16 +245,6 @@ def main():
         y_label="Minibatch",
         selected_idx=min_mse_index,
         filename="MSE_for_OLS_ta_lmb_heat.pdf",
-    )
-
-    print(
-        f"With SGD we found the minimal MSE = {min_mse}, found for number of epochs = {best_epoch} and number of minibatches = {best_minibatch}"
-    )
-
-    """ Comparing to 5th order polynoma fit that uses explicit solution for beta using OLS"""
-    ols_mse_value = find_ols_mse(data)
-    print(
-        f"MSE for 5th order polynom using explicit expression for beta from OLS = {ols_mse_value}"
     )
 
     """ Exploring the MSE as functions of the hyper-parameter λ and the learning rate η for Ridge"""
@@ -249,9 +261,9 @@ def main():
         data, lambdas, eta_multipliers, best_epoch, best_minibatch
     )
 
-    print(
-        f"With SGD we found the minimal MSE = {min_mse_ridge}, for lambda = {best_lambda} and initial eta = {best_eta}"
-    )
+    #  print(
+    #      f"With SGD we found the minimal MSE = {min_mse_ridge}, for lambda = {best_lambda} and initial eta = {best_eta}"
+    #  )
 
     heat_plot(
         #  title="MSE as function of λ and η for Ridge",
@@ -270,9 +282,9 @@ def main():
         mse_values_explicit_ridge,
         best_mse_explicit_ridge,
         best_lambda_explicit_ridge,
-    ) = find_ridge_mse(data, lambdas)
+        best_r2_explicit_ridge,
+    ) = find_ridge_mse_r2(data, lambdas)
 
-    # TODO: Are we sure we want to plot this?
     line_plot(
         #  "MSE as a function of λ for Ridge",
         "",
@@ -286,7 +298,7 @@ def main():
     )
 
     print(
-        f"Using Ridge with explicit beta and lambda = {best_lambda_explicit_ridge} we got MSE = {best_mse_explicit_ridge}"
+        f"Using Ridge with explicit beta and lambda = {best_lambda_explicit_ridge} we got MSE = {best_mse_explicit_ridge} and R2 = {best_r2_explicit_ridge}"
     )
 
 

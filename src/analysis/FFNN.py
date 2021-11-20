@@ -35,17 +35,12 @@ def find_optimal_parameters(
     assert data is not None, "data must be specified"
     assert final_layer is not None, "final_layer must be specified"
 
-    #  EPOCHS = 1000
-    #  search_size = 2
-    #  learning_rates = np.linspace(0.005, 0.1, search_size)
-    #  lambdas = [0] + list(np.linspace(0.005, 0.1, search_size))
     EPOCHS = 1000
     search_size = 6
     learning_rates = np.linspace(0.005, 0.1, search_size)
     lambdas = [0] + list(np.linspace(0.005, 0.1, search_size))
 
     number_of_hidden_layers = [1, 2, 3]
-    #  number_of_hidden_layers = [1, 2]
     hidden_layer_sizes = [30, 40]
 
     if classification:
@@ -270,6 +265,24 @@ def test_different_hidden_layers(
             print("R2: ", LinearRegression.R2(data.z_test, z_tilde))
 
 
+def test_different_actication_functions_custom_values():
+    print("\n" + "-" * 50)
+    print("Custom parameters regression different activation functions")
+
+    learning_rate = 0.005
+    lambda_ = 0.001
+    number_of_hidden_layers = 2
+    hidden_layer_size = 30
+
+    test_different_hidden_layers(
+        learning_rate,
+        lambda_,
+        number_of_hidden_layers,
+        hidden_layer_size,
+        classification=False,
+    )
+
+
 def main():
 
     print("\n" + "-" * 50)
@@ -289,6 +302,7 @@ def main():
     print("\n" + "-" * 50)
     print("\nFinding optimal parameters for regression with own model", flush=True)
     data = FrankeData(20, 1, test_size=0.2)
+
     (
         best_learning_rate,
         best_lambda,
@@ -306,14 +320,6 @@ def main():
         filename=f"franke_function_learning_rate={best_learning_rate}_lambda={best_lambda}_hidden_layers={best_number_of_hidden_layers}_hidden_layer_size={best_hidden_layer_size}_cost.pdf",
     )
 
-    test_different_hidden_layers(
-        best_learning_rate,
-        best_lambda,
-        best_number_of_hidden_layers,
-        best_hidden_layer_size,
-        classification=True,
-    )
-
     np.random.seed(42)
 
     print("\n" + "-" * 50)
@@ -325,12 +331,6 @@ def main():
         best_number_of_hidden_layers,
         best_hidden_layer_size,
     ) = find_optimal_parameters(data=data, classification=True)
-
-    data = BreastCancerData(test_size=0.2)
-    best_learning_rate = 0.001
-    best_lambda = 0.001
-    best_number_of_hidden_layers = 3
-    best_hidden_layer_size = 10
 
     evaluate_performance_best_parameters(
         best_learning_rate,
@@ -349,3 +349,5 @@ def main():
         best_hidden_layer_size,
         classification=True,
     )
+
+    test_different_actication_functions_custom_values()

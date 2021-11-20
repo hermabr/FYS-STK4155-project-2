@@ -231,10 +231,6 @@ def test_breast_cancer_data(lambda_):
         data.z_train,
     )
 
-    #  z_tilde = net.predict(data.X_train)
-    #  correct = z_tilde == data.z_train
-    #  accuracy = np.sum(correct) / len(correct)
-    #  print("Accuracy train:", accuracy)
     line_plot(
         "",
         [list(range(len(net.costs)))],
@@ -293,8 +289,6 @@ def test_franke_data():
     r2 = 1 - mse / np.var(data.z_train)
     print("MSE:", mse)
     print("R2:", r2)
-
-    #  net.plot_cost(data.X_train, data.z_train)
 
 
 if __name__ == "__main__":

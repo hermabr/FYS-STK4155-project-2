@@ -1,0 +1,16 @@
+
+--------------------------------------------------
+
+Optimal parameters, but with lambda = 0.01
+SigmoidLayer
+MSE:  0.026712181146185416
+R2:  0.017390331619726918
+LinearLayer
+MSE:  0.013533313851500816
+R2:  0.5021759936811312
+LeakyReluLayer
+MSE:  0.01137379908994919
+R2:  0.5816139127375303
+ReluLayer
+MSE:  nan
+R2:  nan
