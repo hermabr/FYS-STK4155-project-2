@@ -1,8 +1,0 @@
-MSE for 5th order polynom using explicit expression for beta from OLS = 0.009083458659267386, R2 = 0.71254904130775
-Optimal parameters using ols: minibatches: 32, epochs: 60 for OLS, mse: 0.01581326335586871, r2: 0.4995807343648875
-Optimal parameters using ridge: lambda: 1e-05, eta: 0.20333333333333334 for Ridge, mse: 0.012578691821537761, r2: 0.6019404987871637
-M: 0.009083676473627109
-M: 0.009121585028681978
-M: 0.0098900935979276
-M: 0.011418938711526484
-Using Ridge with explicit beta and lambda = 1e-07 we got MSE = 0.009083676473627109 and R2 = 0.4381857812285338

@@ -1,295 +1,0 @@
-
---------------------------------------------------
-
-Finding optimal parameters for regression with sklearn model
-Progress: 1/252Progress: 2/252Progress: 3/252Progress: 4/252Progress: 5/252Progress: 6/252Progress: 7/252Progress: 8/252Progress: 9/252Progress: 10/252Progress: 11/252Progress: 12/252Progress: 13/252Progress: 14/252Progress: 15/252Progress: 16/252Progress: 17/252Progress: 18/252Progress: 19/252Progress: 20/252Progress: 21/252Progress: 22/252Progress: 23/252Progress: 24/252Progress: 25/252Progress: 26/252Progress: 27/252Progress: 28/252Progress: 29/252Progress: 30/252Progress: 31/252Progress: 32/252Progress: 33/252Progress: 34/252Progress: 35/252Progress: 36/252Progress: 37/252Progress: 38/252Progress: 39/252Progress: 40/252Progress: 41/252Progress: 42/252Progress: 43/252Progress: 44/252Progress: 45/252Progress: 46/252Progress: 47/252Progress: 48/252Progress: 49/252Progress: 50/252Progress: 51/252Progress: 52/252Progress: 53/252Progress: 54/252Progress: 55/252Progress: 56/252Progress: 57/252Progress: 58/252Progress: 59/252Progress: 60/252Progress: 61/252Progress: 62/252Progress: 63/252Progress: 64/252Progress: 65/252Progress: 66/252Progress: 67/252Progress: 68/252Progress: 69/252Progress: 70/252Progress: 71/252Progress: 72/252Progress: 73/252Progress: 74/252Progress: 75/252Progress: 76/252Progress: 77/252Progress: 78/252Progress: 79/252Progress: 80/252Progress: 81/252Progress: 82/252Progress: 83/252Progress: 84/252Progress: 85/252Progress: 86/252Progress: 87/252Progress: 88/252Progress: 89/252Progress: 90/252Progress: 91/252Progress: 92/252Progress: 93/252Progress: 94/252Progress: 95/252Progress: 96/252Progress: 97/252Progress: 98/252Progress: 99/252Progress: 100/252Progress: 101/252Progress: 102/252Progress: 103/252Progress: 104/252Progress: 105/252Progress: 106/252Progress: 107/252Progress: 108/252Progress: 109/252Progress: 110/252Progress: 111/252Progress: 112/252Progress: 113/252Progress: 114/252Progress: 115/252Progress: 116/252Progress: 117/252Progress: 118/252Progress: 119/252Progress: 120/252Progress: 121/252Progress: 122/252Progress: 123/252Progress: 124/252Progress: 125/252Progress: 126/252Progress: 127/252Progress: 128/252Progress: 129/252Progress: 130/252Progress: 131/252Progress: 132/252Progress: 133/252Progress: 134/252Progress: 135/252Progress: 136/252Progress: 137/252Progress: 138/252Progress: 139/252Progress: 140/252Progress: 141/252Progress: 142/252Progress: 143/252Progress: 144/252Progress: 145/252Progress: 146/252Progress: 147/252Progress: 148/252Progress: 149/252Progress: 150/252Progress: 151/252Progress: 152/252Progress: 153/252Progress: 154/252Progress: 155/252Progress: 156/252Progress: 157/252Progress: 158/252Progress: 159/252Progress: 160/252Progress: 161/252Progress: 162/252Progress: 163/252Progress: 164/252Progress: 165/252Progress: 166/252Progress: 167/252Progress: 168/252Progress: 169/252Progress: 170/252Progress: 171/252Progress: 172/252Progress: 173/252Progress: 174/252Progress: 175/252Progress: 176/252Progress: 177/252Progress: 178/252Progress: 179/252Progress: 180/252Progress: 181/252Progress: 182/252Progress: 183/252Progress: 184/252Progress: 185/252Progress: 186/252Progress: 187/252Progress: 188/252Progress: 189/252Progress: 190/252Progress: 191/252Progress: 192/252Progress: 193/252Progress: 194/252Progress: 195/252Progress: 196/252Progress: 197/252Progress: 198/252Progress: 199/252Progress: 200/252Progress: 201/252Progress: 202/252Progress: 203/252Progress: 204/252Progress: 205/252Progress: 206/252Progress: 207/252Progress: 208/252Progress: 209/252Progress: 210/252Progress: 211/252Progress: 212/252Progress: 213/252Progress: 214/252Progress: 215/252Progress: 216/252Progress: 217/252Progress: 218/252Progress: 219/252Progress: 220/252Progress: 221/252Progress: 222/252Progress: 223/252Progress: 224/252Progress: 225/252Progress: 226/252Progress: 227/252Progress: 228/252Progress: 229/252Progress: 230/252Progress: 231/252Progress: 232/252Progress: 233/252Progress: 234/252Progress: 235/252Progress: 236/252Progress: 237/252Progress: 238/252Progress: 239/252Progress: 240/252Progress: 241/252Progress: 242/252Progress: 243/252Progress: 244/252Progress: 245/252Progress: 246/252Progress: 247/252Progress: 248/252Progress: 249/252Progress: 250/252Progress: 251/252Progress: 252/252Best for mse: 0.012887394753141967. Parameters: learning rate: 0.1, lambda: 0, hidden layers: 1, hidden layer size: 40
-Performance for other metrics: r2: 0.5863145266693017, 
-
-Entire best matrix indices: [[5 0 0 1]]
-Best for r2: 0.5863145266693017. Parameters: learning rate: 0.1, lambda: 0, hidden layers: 1, hidden layer size: 40
-Performance for other metrics: mse: 0.012887394753141967, 
-
-Entire best matrix indices: [[5 0 0 1]]
-
---------------------------------------------------
-
-Finding optimal parameters for classification with sklearn model
-Progress: 1/252Progress: 2/252Progress: 3/252Progress: 4/252Progress: 5/252Progress: 6/252Progress: 7/252Progress: 8/252Progress: 9/252Progress: 10/252Progress: 11/252Progress: 12/252Progress: 13/252Progress: 14/252Progress: 15/252Progress: 16/252Progress: 17/252Progress: 18/252Progress: 19/252Progress: 20/252Progress: 21/252Progress: 22/252Progress: 23/252Progress: 24/252Progress: 25/252Progress: 26/252Progress: 27/252Progress: 28/252Progress: 29/252Progress: 30/252Progress: 31/252Progress: 32/252Progress: 33/252Progress: 34/252Progress: 35/252Progress: 36/252Progress: 37/252Progress: 38/252Progress: 39/252Progress: 40/252Progress: 41/252Progress: 42/252Progress: 43/252Progress: 44/252Progress: 45/252Progress: 46/252Progress: 47/252Progress: 48/252Progress: 49/252Progress: 50/252Progress: 51/252Progress: 52/252Progress: 53/252Progress: 54/252Progress: 55/252Progress: 56/252Progress: 57/252Progress: 58/252Progress: 59/252Progress: 60/252Progress: 61/252Progress: 62/252Progress: 63/252Progress: 64/252Progress: 65/252Progress: 66/252Progress: 67/252Progress: 68/252Progress: 69/252Progress: 70/252Progress: 71/252Progress: 72/252Progress: 73/252Progress: 74/252Progress: 75/252Progress: 76/252Progress: 77/252Progress: 78/252Progress: 79/252Progress: 80/252Progress: 81/252Progress: 82/252Progress: 83/252Progress: 84/252Progress: 85/252Progress: 86/252Progress: 87/252Progress: 88/252Progress: 89/252Progress: 90/252Progress: 91/252Progress: 92/252Progress: 93/252Progress: 94/252Progress: 95/252Progress: 96/252Progress: 97/252Progress: 98/252Progress: 99/252Progress: 100/252Progress: 101/252Progress: 102/252Progress: 103/252Progress: 104/252Progress: 105/252Progress: 106/252Progress: 107/252Progress: 108/252Progress: 109/252Progress: 110/252Progress: 111/252Progress: 112/252Progress: 113/252Progress: 114/252Progress: 115/252Progress: 116/252Progress: 117/252Progress: 118/252Progress: 119/252Progress: 120/252Progress: 121/252Progress: 122/252Progress: 123/252Progress: 124/252Progress: 125/252Progress: 126/252Progress: 127/252Progress: 128/252Progress: 129/252Progress: 130/252Progress: 131/252Progress: 132/252Progress: 133/252Progress: 134/252Progress: 135/252Progress: 136/252Progress: 137/252Progress: 138/252Progress: 139/252Progress: 140/252Progress: 141/252Progress: 142/252Progress: 143/252Progress: 144/252Progress: 145/252Progress: 146/252Progress: 147/252Progress: 148/252Progress: 149/252Progress: 150/252Progress: 151/252Progress: 152/252Progress: 153/252Progress: 154/252Progress: 155/252Progress: 156/252Progress: 157/252Progress: 158/252Progress: 159/252Progress: 160/252Progress: 161/252Progress: 162/252Progress: 163/252Progress: 164/252Progress: 165/252Progress: 166/252Progress: 167/252Progress: 168/252Progress: 169/252Progress: 170/252Progress: 171/252Progress: 172/252Progress: 173/252Progress: 174/252Progress: 175/252Progress: 176/252Progress: 177/252Progress: 178/252Progress: 179/252Progress: 180/252Progress: 181/252Progress: 182/252Progress: 183/252Progress: 184/252Progress: 185/252Progress: 186/252Progress: 187/252Progress: 188/252Progress: 189/252Progress: 190/252Progress: 191/252Progress: 192/252Progress: 193/252Progress: 194/252Progress: 195/252Progress: 196/252Progress: 197/252Progress: 198/252Progress: 199/252Progress: 200/252Progress: 201/252Progress: 202/252Progress: 203/252Progress: 204/252Progress: 205/252Progress: 206/252Progress: 207/252Progress: 208/252Progress: 209/252Progress: 210/252Progress: 211/252Progress: 212/252Progress: 213/252Progress: 214/252Progress: 215/252Progress: 216/252Progress: 217/252Progress: 218/252Progress: 219/252Progress: 220/252Progress: 221/252Progress: 222/252Progress: 223/252Progress: 224/252Progress: 225/252Progress: 226/252Progress: 227/252Progress: 228/252Progress: 229/252Progress: 230/252Progress: 231/252Progress: 232/252Progress: 233/252Progress: 234/252Progress: 235/252Progress: 236/252Progress: 237/252Progress: 238/252Progress: 239/252Progress: 240/252Progress: 241/252Progress: 242/252Progress: 243/252Progress: 244/252Progress: 245/252Progress: 246/252Progress: 247/252Progress: 248/252Progress: 249/252Progress: 250/252Progress: 251/252Progress: 252/252Best for accuracy: 1.0. Parameters: learning rate: 0.005, lambda: 0, hidden layers: 1, hidden layer size: 40
-Performance for other metrics: f1: 1.0, ppv: 1.0, npv: 1.0, 
-
-Entire best matrix indices: [[0 0 0 1]
- [2 0 1 1]
- [2 0 2 0]
- [5 0 1 1]]
-Best for f1: 1.0. Parameters: learning rate: 0.005, lambda: 0, hidden layers: 1, hidden layer size: 40
-Performance for other metrics: accuracy: 1.0, ppv: 1.0, npv: 1.0, 
-
-Entire best matrix indices: [[0 0 0 1]
- [2 0 1 1]
- [2 0 2 0]
- [5 0 1 1]]
-Best for ppv: 1.0. Parameters: learning rate: 0.005, lambda: 0, hidden layers: 1, hidden layer size: 30
-Performance for other metrics: accuracy: 0.9912280701754386, f1: 0.9934640522875817, npv: 0.9736842105263158, 
-
-Entire best matrix indices: [[0 0 0 0]
- [0 0 0 1]
- [0 0 1 0]
- [0 0 1 1]
- [0 0 2 0]
- [0 0 2 1]
- [0 1 0 0]
- [0 1 0 1]
- [0 1 1 0]
- [0 1 1 1]
- [0 1 2 0]
- [0 2 0 0]
- [0 2 0 1]
- [0 2 1 0]
- [0 2 1 1]
- [0 2 2 1]
- [0 3 0 0]
- [0 3 0 1]
- [0 3 1 0]
- [0 3 1 1]
- [0 3 2 0]
- [0 3 2 1]
- [0 4 0 1]
- [0 4 1 0]
- [0 4 1 1]
- [0 4 2 0]
- [0 4 2 1]
- [0 5 0 0]
- [0 5 0 1]
- [0 5 1 0]
- [0 5 1 1]
- [0 5 2 0]
- [0 5 2 1]
- [0 6 0 0]
- [0 6 0 1]
- [0 6 1 0]
- [0 6 1 1]
- [0 6 2 0]
- [0 6 2 1]
- [1 0 0 0]
- [1 0 0 1]
- [1 0 1 0]
- [1 0 1 1]
- [1 0 2 0]
- [1 0 2 1]
- [1 1 0 0]
- [1 1 1 0]
- [1 1 1 1]
- [1 1 2 0]
- [1 1 2 1]
- [1 2 0 0]
- [1 2 0 1]
- [1 2 1 0]
- [1 2 1 1]
- [1 2 2 0]
- [1 2 2 1]
- [1 3 0 1]
- [1 3 1 0]
- [1 3 1 1]
- [1 3 2 0]
- [1 3 2 1]
- [1 4 0 0]
- [1 4 0 1]
- [1 4 1 0]
- [1 4 1 1]
- [1 4 2 0]
- [1 4 2 1]
- [1 5 0 0]
- [1 5 0 1]
- [1 5 1 1]
- [1 5 2 0]
- [1 5 2 1]
- [1 6 0 0]
- [1 6 0 1]
- [1 6 1 0]
- [1 6 1 1]
- [1 6 2 0]
- [1 6 2 1]
- [2 0 0 0]
- [2 0 0 1]
- [2 0 1 0]
- [2 0 1 1]
- [2 0 2 0]
- [2 0 2 1]
- [2 1 0 1]
- [2 1 1 1]
- [2 1 2 0]
- [2 1 2 1]
- [2 2 0 0]
- [2 2 1 1]
- [2 2 2 0]
- [2 2 2 1]
- [2 3 0 0]
- [2 3 0 1]
- [2 3 1 0]
- [2 3 1 1]
- [2 3 2 0]
- [2 3 2 1]
- [2 4 0 1]
- [2 4 1 0]
- [2 4 1 1]
- [2 4 2 0]
- [2 4 2 1]
- [2 5 0 0]
- [2 5 0 1]
- [2 5 1 0]
- [2 5 1 1]
- [2 5 2 0]
- [2 5 2 1]
- [2 6 0 0]
- [2 6 0 1]
- [2 6 1 0]
- [2 6 1 1]
- [2 6 2 0]
- [2 6 2 1]
- [3 0 0 0]
- [3 0 0 1]
- [3 0 1 0]
- [3 0 2 0]
- [3 0 2 1]
- [3 1 0 0]
- [3 1 0 1]
- [3 1 1 0]
- [3 1 1 1]
- [3 1 2 0]
- [3 1 2 1]
- [3 2 0 0]
- [3 2 0 1]
- [3 2 1 0]
- [3 2 1 1]
- [3 2 2 1]
- [3 3 0 0]
- [3 3 0 1]
- [3 3 1 0]
- [3 3 1 1]
- [3 3 2 0]
- [3 3 2 1]
- [3 4 0 1]
- [3 4 1 0]
- [3 4 1 1]
- [3 4 2 0]
- [3 4 2 1]
- [3 5 0 0]
- [3 5 0 1]
- [3 5 1 0]
- [3 5 1 1]
- [3 5 2 0]
- [3 5 2 1]
- [3 6 0 0]
- [3 6 0 1]
- [3 6 1 0]
- [3 6 1 1]
- [3 6 2 1]
- [4 0 0 0]
- [4 0 0 1]
- [4 0 1 0]
- [4 0 1 1]
- [4 0 2 0]
- [4 0 2 1]
- [4 1 0 0]
- [4 1 0 1]
- [4 1 1 1]
- [4 1 2 1]
- [4 2 0 0]
- [4 2 1 0]
- [4 2 2 0]
- [4 2 2 1]
- [4 3 0 0]
- [4 3 0 1]
- [4 3 1 0]
- [4 3 1 1]
- [4 3 2 0]
- [4 3 2 1]
- [4 4 0 0]
- [4 4 0 1]
- [4 4 1 0]
- [4 4 1 1]
- [4 4 2 1]
- [4 5 0 0]
- [4 5 0 1]
- [4 5 1 1]
- [4 5 2 0]
- [4 5 2 1]
- [4 6 0 0]
- [4 6 0 1]
- [4 6 1 0]
- [4 6 1 1]
- [4 6 2 0]
- [4 6 2 1]
- [5 0 0 0]
- [5 0 0 1]
- [5 0 1 0]
- [5 0 1 1]
- [5 0 2 0]
- [5 0 2 1]
- [5 1 0 0]
- [5 1 0 1]
- [5 1 1 0]
- [5 1 1 1]
- [5 1 2 0]
- [5 1 2 1]
- [5 2 1 0]
- [5 2 1 1]
- [5 2 2 0]
- [5 2 2 1]
- [5 3 0 1]
- [5 3 1 0]
- [5 3 2 0]
- [5 4 0 0]
- [5 4 0 1]
- [5 4 1 1]
- [5 4 2 0]
- [5 4 2 1]
- [5 5 0 0]
- [5 5 1 0]
- [5 5 2 0]
- [5 6 0 0]
- [5 6 0 1]
- [5 6 1 0]
- [5 6 1 1]
- [5 6 2 0]
- [5 6 2 1]]
-Best for npv: 1.0. Parameters: learning rate: 0.005, lambda: 0, hidden layers: 1, hidden layer size: 40
-Performance for other metrics: accuracy: 1.0, f1: 1.0, ppv: 1.0, 
-
-Entire best matrix indices: [[0 0 0 1]
- [0 1 2 1]
- [0 2 2 0]
- [0 4 0 0]
- [1 3 0 0]
- [1 5 1 0]
- [2 0 1 1]
- [2 0 2 0]
- [2 1 0 0]
- [2 1 1 0]
- [2 2 0 1]
- [2 2 1 0]
- [2 4 0 0]
- [3 0 1 1]
- [3 2 2 0]
- [3 4 0 0]
- [3 6 2 0]
- [4 1 1 0]
- [4 1 2 0]
- [4 2 1 1]
- [4 4 2 0]
- [4 5 1 0]
- [5 0 1 1]
- [5 2 0 0]
- [5 2 0 1]
- [5 3 0 0]
- [5 3 1 1]
- [5 3 2 1]
- [5 4 1 0]
- [5 5 0 1]
- [5 5 1 1]
- [5 5 2 1]]
-
---------------------------------------------------
-
-Finding optimal parameters for regression with own model
-Progress: 1/252Progress: 2/252Progress: 3/252Progress: 4/252Progress: 5/252Progress: 6/252Progress: 7/252Progress: 8/252Progress: 9/252Progress: 10/252Progress: 11/252Progress: 12/252Progress: 13/252Progress: 14/252Progress: 15/252Progress: 16/252Progress: 17/252Progress: 18/252Progress: 19/252Progress: 20/252Progress: 21/252
