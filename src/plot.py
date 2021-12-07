@@ -5,13 +5,24 @@ from matplotlib import cm
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 
-# TODO: Scale these correctly
-#  plt.rcParams.update({"font.size": 12, "figure.dpi": 300, "figure.figsize": (4.7747, 5)})
-
 sns.set()
 
 
 def signif(x, p):
+    """Returns p significant digits of x
+
+    Parameters
+    ----------
+        x : np.array
+            The values to round
+        p : int
+            The number of significant digits
+
+    Returns
+    -------
+        float
+            The rounded number
+    """
     x = np.asarray(x)
     x_positive = np.where(np.isfinite(x) & (x != 0), np.abs(x), 10 ** (p - 1))
     mags = 10 ** (p - 1 - np.floor(np.log10(x_positive)))
@@ -90,6 +101,7 @@ def heat_plot(
     x_label,
     y_label,
     selected_idx=None,
+    show=True,
     filename="",
 ):
     """Plots the heat plot
@@ -110,6 +122,8 @@ def heat_plot(
             The label for the y-axis
         selected_idx : tuple[int, int]
             The index for which to give an extra mark
+        show : bool
+            Whether to show the plot
         filename : str/None
             The filename for which to save the plot, does not save if None
     """
@@ -117,6 +131,7 @@ def heat_plot(
         table_values,
         xticklabels=signif(xticklabels, 2),
         yticklabels=signif(yticklabels, 2),
+        annot=True,
     )
     from matplotlib.patches import Rectangle
 
@@ -127,7 +142,8 @@ def heat_plot(
     plt.ylabel(y_label)
     if filename:
         plt.savefig(f"output/{filename.replace(' ', '_')}")
-    plt.show()
+    if show:
+        plt.show()
 
 
 def line_plot(
@@ -140,6 +156,7 @@ def line_plot(
     x_log=False,
     y_log=False,
     filename="",
+    show=True,
 ):
     """Plots a line plot
 
@@ -171,4 +188,5 @@ def line_plot(
         plt.yscale("log")
     if filename:
         plt.savefig(f"output/{filename.replace(' ', '_')}")
-    plt.show()
+    if show:
+        plt.show()
